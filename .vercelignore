@@ -1,0 +1,10 @@
+# Never upload local secrets or the personal-mode switch
+.env
+.env.*
+.env.local
+# Local-only bridges and launchers (MetaTrader / NinjaTrader run on each user PC)
+connectors/
+*.bat
+node_modules
+.next
+build.log
