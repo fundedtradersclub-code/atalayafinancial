@@ -15,17 +15,18 @@ const TOC: [string, string][] = [
   ["etiquetas", "3. What the labels mean"],
   ["mercados", "4. Markets"],
   ["simbolo", "5. Symbol and chart"],
-  ["tendencia", "6. Trend"],
-  ["riesgo", "7. Risk"],
-  ["ia", "8. AI Analyst"],
-  ["calc", "9. Calculators"],
-  ["cartera", "10. Paper portfolio"],
-  ["noticias", "11. News"],
-  ["apis", "12. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)"],
-  ["mt5", "13. Connect MetaTrader 5"],
-  ["ninja", "14. Connect NinjaTrader"],
-  ["privacidad", "15. Privacy and risk"],
-  ["faq", "16. Frequently asked questions"],
+  ["fondeo", "6. Fondeo Agent v5 indicator"],
+  ["tendencia", "7. Trend"],
+  ["riesgo", "8. Risk"],
+  ["ia", "9. AI Analyst"],
+  ["calc", "10. Calculators"],
+  ["cartera", "11. Paper portfolio"],
+  ["noticias", "12. News"],
+  ["apis", "13. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)"],
+  ["mt5", "14. Connect MetaTrader 5"],
+  ["ninja", "15. Connect NinjaTrader"],
+  ["privacidad", "16. Privacy and risk"],
+  ["faq", "17. Frequently asked questions"],
 ];
 
 function H({ id, children }: { id: string; children: React.ReactNode }) {
@@ -116,7 +117,7 @@ export default function ManualEn() {
             <strong> Biggest movers</strong> panel sorts the board by % change. It refreshes every 10 seconds (crypto every 5; with MetaTrader or NinjaTrader
             connected, every second).
           </p>
-          <p>In the public version, indices and commodities are shown through <strong>ETFs</strong> that track them (SPY = S&amp;P 500, GLD = gold…), plus a TradingView panel with indices, futures and bonds.</p>
+          <p>In the public version, indices and commodities are shown through <strong>ETFs</strong> that track them (SPY = S&amp;P 500, GLD = gold…), plus a TradingView panel with indices, commodities and bonds.</p>
 
           <H id="simbolo">5. Symbol and chart</H>
           <ul>
@@ -131,7 +132,43 @@ export default function ManualEn() {
             <li><strong>Financial statements · SEC</strong> (US stocks): revenue, earnings, EPS, cash, assets, liabilities and equity for the last 4 years, plus recent filings (10-K, 10-Q, 8-K…) linked to the original document.</li>
           </ul>
 
-          <H id="tendencia">6. Trend</H>
+          <H id="fondeo">6. Fondeo Agent v5 indicator</H>
+          <p>
+            This is ATALAYA&apos;s version of the <strong>MNQ Fondeo Agent</strong> indicator (a TradingView Pine Script), built for trading Nasdaq futures
+            under the rules of a funded account. It uses the same rules as the original. <strong>It is visual only</strong>: it simulates entries and exits on
+            the chart, sends no orders and connects to no account.
+          </p>
+          <p><strong>How to turn it on:</strong></p>
+          <ol>
+            <li>Open the symbol (for example <K>MNQ</K> or <K>NQ</K>) and pick an intraday timeframe: <strong>1m, 5m or 15m</strong>.</li>
+            <li>Press <strong>Indicators</strong> and tick <strong>Fondeo Agent v5</strong>.</li>
+            <li>A <strong>Fondeo settings</strong> button appears so you can enter your account and risk.</li>
+          </ol>
+          <p><strong>What it draws:</strong></p>
+          <ul>
+            <li><span style={{ color: "#fde047" }}>Yellow line</span>: session VWAP.</li>
+            <li><span className="up">ON H</span> / <span className="down">ON L</span>: overnight session high and low (18:00 to 09:30 New York), fixed for the day.</li>
+            <li>Faint dashed lines: previous day&apos;s high and low.</li>
+            <li>Soft blue band: entry window, 09:30 to 11:45 New York.</li>
+            <li>Arrows: <span className="up">LONG</span> or <span className="down">SHORT</span> (shown as LARGO / CORTO), with trade number, size and risk.</li>
+            <li>With an open trade: grey entry line, <span className="down">red stop</span> and <span style={{ color: "#a3e635" }}>green target</span>.</li>
+            <li>Circles: exit (Target, Stop, Breakeven or End of session, with the result in dollars), “Stop to breakeven”, “Setup almost confirmed” and “No entry” (when the signal does not fit your risk or the account margin).</li>
+          </ul>
+          <p><strong>Entry rules</strong> (same as the Pine script):</p>
+          <ul>
+            <li><strong>Long</strong>: the close is above VWAP and above the overnight high, and the candle is bullish, closes above the previous candle&apos;s high and has volume above the 20-bar average.</li>
+            <li><strong>Short</strong>: the reverse (below VWAP and below the overnight low, bearish candle breaking the previous low with volume).</li>
+            <li>Only from 09:30 to 11:45 New York, outside the news window (±20 minutes), with fewer than 3 trades that day, before the maximum daily loss and with no other open trade.</li>
+            <li>Closed candles only: the candle still forming never opens or closes a trade.</li>
+          </ul>
+          <p><strong>Simulated management:</strong> stop = the larger of ATR(14) × 1.4 and 8 points · target = 1.5R · the stop moves to breakeven at 1R · forced exit at 16:00 · if the stop and target are both hit in the same candle, the stop counts (the conservative choice).</p>
+          <p><strong>Control panel</strong> (top right of the chart): account limit, margin to the limit, trades today, size and risk, simulated P&amp;L for the day, entry window, news block, whether it may trade, current trade and current stop.</p>
+          <p><strong>Settings:</strong> account size (25K or 50K), trailing drawdown, current and peak balance, minimum cushion, risk per trade, maximum contracts and trades per day, maximum daily loss, ATR, minimum stop, target, breakeven, point value and news times (New York time). They are saved in your browser; “Restore original values” goes back to the Pine defaults.</p>
+          <p><strong>Size:</strong> for futures, whole contracts by point value (MNQ $2, NQ $20, MES $5, ES $50…). For stocks, ETFs and crypto, fractional units.</p>
+          <p><strong>Data:</strong> in the personal installation it works with MNQ/NQ (delayed Yahoo, or live with NinjaTrader connected). In the public version futures have no free data: use it with crypto or ETFs (with your Twelve Data or Polygon key).</p>
+          <Note tone="warn">Educational simulation: it does not guarantee results and is not a recommendation. It sends no orders, so it is not automated trading; still, check your funded-account firm&apos;s rules.</Note>
+
+          <H id="tendencia">7. Trend</H>
           <p>
             Reads the symbol&apos;s trend on three timeframes: <strong>Intraday</strong> (hours), <strong>Daily</strong> (days to weeks) and
             <strong> Weekly</strong> (months). On each one, 8 classic signals vote: price vs the 20 and 50 averages, the 20/50 and 50/200 crosses, MACD, RSI,
@@ -146,19 +183,19 @@ export default function ManualEn() {
           </ul>
           <Note tone="warn">It describes past prices. It does not predict the future and may change with the next bar.</Note>
 
-          <H id="riesgo">7. Risk</H>
+          <H id="riesgo">8. Risk</H>
           <p>Using a year of the symbol&apos;s real daily returns, TradingCalc computes: annualized return and volatility, Sharpe (corrected), Sortino, max drawdown, Calmar, % up days, best and worst day, skewness, kurtosis and PSR.</p>
           <p>Under <strong>Value at risk</strong>, enter your position size: you&apos;ll see how much you could lose on a bad day (VaR 95% and 99%) and the average loss on those days (CVaR). The histogram shows how daily returns are distributed.</p>
 
-          <H id="ia">8. AI Analyst</H>
+          <H id="ia">9. AI Analyst</H>
           <p>
             Ask questions in English or Spanish (“Which NQ levels are worth watching?”). Before answering, the analyst receives the data on screen: board prices,
             trend per timeframe, Hurst and the symbol&apos;s headlines. Untick “data for …” to ask in general. Enter sends; Shift+Enter adds a line; the
             square stops the answer. It answers in the language you selected.
           </p>
-          <p>It needs an NVIDIA key (free): see section 12. AI can be wrong; verify any data.</p>
+          <p>It needs an NVIDIA key (free): see section 13. AI can be wrong; verify any data.</p>
 
-          <H id="calc">9. Calculators</H>
+          <H id="calc">10. Calculators</H>
           <ul>
             <li><strong>Risk / reward</strong>: units to buy risking a % of your account, and the result at the stop and at the target.</li>
             <li><strong>Position size</strong>: units so you lose no more than a dollar amount.</li>
@@ -167,17 +204,17 @@ export default function ManualEn() {
           </ul>
           <p>Initial values come from the active symbol. Calculations are done by TradingCalc, without fees.</p>
 
-          <H id="cartera">10. Paper portfolio</H>
+          <H id="cartera">11. Paper portfolio</H>
           <p>
             You start with a fictitious $100,000. Buy and sell from the symbol page or with <K>BUY 10 AAPL</K>. You&apos;ll see equity, total and unrealized
             P&amp;L, cash, positions with their weight and the order history. “Close” sells the whole position; “Reset portfolio” goes back to $100,000.
             Long only (no short selling), no fees or slippage.
           </p>
 
-          <H id="noticias">11. News</H>
+          <H id="noticias">12. News</H>
           <p>Headlines from MarketWatch and CNBC, filterable by source and linked to the original article. Each symbol page has news specific to that company.</p>
 
-          <H id="apis">12. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>
+          <H id="apis">13. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>
           <p>Without any key you already get live crypto, daily ECB exchange rates, SEC financial statements and all calculators. With your own keys (all have a free plan):</p>
           <ul>
             <li><strong>Finnhub</strong> (start with this one): <strong>real-time</strong> prices for US stocks and ETFs, search and company news.</li>
@@ -194,7 +231,7 @@ export default function ManualEn() {
           </ol>
           <Note>Your keys are stored only in your browser. They travel with each request to the ATALAYA server, which requests the data from the provider on your behalf and does not store them. CME futures (NQ, ES, MNQ) are not in the free plans.</Note>
 
-          <H id="mt5">13. Connect MetaTrader 5</H>
+          <H id="mt5">14. Connect MetaTrader 5</H>
           <p>
             Brings <strong>live</strong> prices for currencies, gold, silver and indices (US100/USTEC, US500, US30, DE40, JPN225…) from your MetaTrader 5 into
             ATALAYA. It works in the <strong>personal installation</strong> (ATALAYA running on your own Windows PC). It is <strong>read-only</strong>: it sends no
@@ -219,7 +256,7 @@ export default function ManualEn() {
           </ul>
           <Note tone="warn">These are your broker&apos;s prices (CFDs): they track the market but are not identical to CME futures (for example, US100 vs NQ can differ by a few points). Use them as a reference for personal use; they may not be published.</Note>
 
-          <H id="ninja">14. Connect NinjaTrader</H>
+          <H id="ninja">15. Connect NinjaTrader</H>
           <p>Brings your futures (MNQ, NQ, ES…) live from NinjaTrader 8. Personal installation only, read-only.</p>
           <Note tone="warn">If you trade a funded account (Apex or another), <strong>check with their support first</strong> that you may use a custom read-only indicator. ATALAYA sends no orders, but the rules belong to each firm.</Note>
           <ol>
@@ -231,7 +268,7 @@ export default function ManualEn() {
           </ol>
           <p>Check: in NinjaTrader open <strong>New → NinjaScript Output</strong>; it should say “AtalayaBridge: publicando precios en http://127.0.0.1:8777/quotes”.</p>
 
-          <H id="privacidad">15. Privacy and risk</H>
+          <H id="privacidad">16. Privacy and risk</H>
           <ul>
             <li>ATALAYA asks for no registration or personal data, and uses no advertising or tracking cookies.</li>
             <li>MetaTrader and NinjaTrader only communicate inside your own computer; nobody on the internet can read them.</li>
@@ -244,7 +281,7 @@ export default function ManualEn() {
             <Link href="/reclamos#en" className="text-info underline">Claims</Link>.
           </p>
 
-          <H id="faq">16. Frequently asked questions</H>
+          <H id="faq">17. Frequently asked questions</H>
           <p><strong>Why isn&apos;t a price moving?</strong> Most often the market is closed (you&apos;ll see the moon 🌙), or the data is delayed or daily. For real time, connect Finnhub, MetaTrader 5 or NinjaTrader.</p>
           <p><strong>Can I connect Bloomberg?</strong> No. Its API only works with a Bloomberg Terminal subscription on the same computer; there is no key for websites.</p>
           <p><strong>What about TradingView or investing.com?</strong> TradingView is shown with its official charts (TradingView button on the symbol page). Extracting data from TradingView or investing.com breaks their terms, so it is not done.</p>

@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  CandlestickSeries, HistogramSeries, LineSeries, LineStyle, createChart,
+  CandlestickSeries, HistogramSeries, LineSeries, LineStyle, createChart, createSeriesMarkers,
   type IChartApi, type ISeriesApi, type Logical, type MouseEventParams, type UTCTimestamp,
 } from "lightweight-charts";
-import { Crosshair, Eraser, GitCommitHorizontal, MoveUpRight, Ruler, Spline, TrendingUp, Undo2 } from "lucide-react";
+import { Crosshair, Eraser, GitCommitHorizontal, MoveUpRight, Ruler, Settings2, Spline, TrendingUp, Undo2 } from "lucide-react";
 import type { Candle } from "@/lib/market";
 import { bollinger, ema, macdSeries, regression, rsiSeries, sma } from "@/lib/indicators";
-import { fmt, fmtPrice } from "./ui";
+import { FONDEO_DEFAULTS, autoPointValue, runFondeo, type FondeoSettings } from "@/lib/fondeo";
+import { fmt, fmtPrice, inputCls } from "./ui";
+import { t as tr } from "./i18n";
 
 // Charts by TradingView Lightweight Charts (Apache-2.0); its attribution logo stays on.
 // Drawings are our own SVG layer on top, stored in time/price space so they survive zoom and interval changes.
@@ -17,13 +19,13 @@ type Pt = { t: number; p: number }; // raw UTC seconds, price
 type Kind = "trend" | "ray" | "hline" | "fib";
 type Drawing = { id: string; kind: Kind; a: Pt; b?: Pt };
 type Tool = "cursor" | Kind | "measure";
-type Ind = "vol" | "ma20" | "ma50" | "ma200" | "ema21" | "bb" | "chan" | "rsi" | "macd";
+type Ind = "vol" | "ma20" | "ma50" | "ma200" | "ema21" | "bb" | "chan" | "rsi" | "macd" | "fondeo";
 
 const IND_LABEL: Record<Ind, string> = {
   vol: "Volumen", ma20: "Media 20", ma50: "Media 50", ma200: "Media 200", ema21: "EMA 21",
-  bb: "Bollinger", chan: "Canal de tendencia", rsi: "RSI 14", macd: "MACD",
+  bb: "Bollinger", chan: "Canal de tendencia", rsi: "RSI 14", macd: "MACD", fondeo: "Fondeo Agent v5",
 };
-const IND_COLOR: Partial<Record<Ind, string>> = { ma20: "#ffb224", ma50: "#6cb8ff", ma200: "#e879a6", ema21: "#d9d2c0", bb: "#8a8577" };
+const IND_COLOR: Partial<Record<Ind, string>> = { ma20: "#ffb224", ma50: "#6cb8ff", ma200: "#e879a6", ema21: "#d9d2c0", bb: "#8a8577", fondeo: "#fde047" };
 const FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 
 const TOOLS: { id: Tool; label: string; icon: typeof Crosshair; hint: string }[] = [
@@ -60,6 +62,11 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
   const [measure, setMeasure] = useState<{ a: Pt; b: Pt } | null>(null);
   const [hover, setHover] = useState<{ pt: Pt | null; idx: number | null }>({ pt: null, idx: null });
   const [menu, setMenu] = useState(false);
+  const [fset, setFset] = useState<FondeoSettings>(() => ({ ...FONDEO_DEFAULTS, ...loadJSON<Partial<FondeoSettings>>("atalaya.fondeo", {}) }));
+  const [fsetOpen, setFsetOpen] = useState(false);
+  useEffect(() => saveJSON("atalaya.fondeo", fset), [fset]);
+  // The user's own Pine indicator, ported: recomputed only when data or its settings change.
+  const fondeo = useMemo(() => (ind.includes("fondeo") && candles.length > 30 ? runFondeo(candles, symbol, fset) : null), [ind, candles, symbol, fset]);
 
   useEffect(() => saveJSON("atalaya.ind", ind), [ind]);
   useEffect(() => saveJSON(`atalaya.draw.${symbol}`, drawings), [drawings, symbol]);
@@ -139,6 +146,26 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
       const b = bollinger(closes);
       line(b.up, IND_COLOR.bb!); line(b.lo, IND_COLOR.bb!); line(b.mid, IND_COLOR.bb!, { lineStyle: LineStyle.Dotted });
     }
+    if (fondeo) {
+      // Gaps where the value is null (whitespace points), like Pine's plot.style_linebr.
+      const gapLine = (vals: (number | null)[], color: string, width: 1 | 2 = 1, style: LineStyle = LineStyle.Solid, title = "") => {
+        const s = chart.addSeries(LineSeries, { color, lineWidth: width, lineStyle: style, priceLineVisible: false, lastValueVisible: !!title, title, crosshairMarkerVisible: false });
+        s.setData(vals.map((x, i) => (x == null ? { time: T(candles[i].time) } : { time: T(candles[i].time), value: x })));
+      };
+      const L = fondeo.lines;
+      gapLine(L.vwap, "#fde047", 2, LineStyle.Solid, "VWAP");
+      gapLine(L.onHigh, "rgba(61,220,132,0.85)", 2, LineStyle.Solid, "ON H");
+      gapLine(L.onLow, "rgba(255,92,77,0.85)", 2, LineStyle.Solid, "ON L");
+      gapLine(L.prevHigh, "rgba(61,220,132,0.35)", 1, LineStyle.Dashed);
+      gapLine(L.prevLow, "rgba(255,92,77,0.35)", 1, LineStyle.Dashed);
+      gapLine(L.entry, "#918b7c", 1, LineStyle.Dotted);
+      gapLine(L.stop, "#ff5c4d", 2, LineStyle.Solid, "Stop");
+      gapLine(L.target, "#a3e635", 2, LineStyle.Solid, tr("Obj"));
+      createSeriesMarkers(main, fondeo.markers.map((m) => ({
+        time: T(m.time), position: m.above ? "aboveBar" : "belowBar", shape: m.shape, color: m.color, text: tr(m.text),
+      })));
+    }
+
     let pane = 1;
     if (ind.includes("rsi")) {
       const r = line(rsiSeries(closes), v("--amber"), { lastValueVisible: true, crosshairMarkerVisible: true }, pane);
@@ -212,7 +239,7 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
       chartRef.current = null; mainRef.current = null;
       setApi(null);
     };
-  }, [candles, ind, intraday, frame, ptFrom, bump]);
+  }, [candles, ind, intraday, frame, ptFrom, bump, fondeo]);
 
   useEffect(() => {
     api?.chart.applyOptions({ handleScroll: tool === "cursor", handleScale: tool === "cursor" });
@@ -290,6 +317,20 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
       }
     });
 
+    // Fondeo Agent: tint the entry window (09:30-11:45 New York), like the Pine bgcolor.
+    if (fondeo && ts) {
+      let start = -1;
+      fondeo.inWindow.forEach((on, i) => {
+        const end = !on || i === fondeo.inWindow.length - 1;
+        if (on && start < 0) start = i;
+        if (end && start >= 0) {
+          const x1 = ts.logicalToCoordinate((start - 0.5) as Logical), x2 = ts.logicalToCoordinate(((on ? i : i - 1) + 0.5) as Logical);
+          if (x1 != null && x2 != null && x2 > 0 && x1 < W) svg.push(<rect key={`win${start}`} x={x1} y={0} width={Math.max(1, x2 - x1)} height={H} fill="#6cb8ff" opacity={0.06} />);
+          start = -1;
+        }
+      });
+    }
+
     // Auto trend channel: least squares over the last 50 closes, ±2σ, projected 10 bars ahead.
     if (ind.includes("chan") && candles.length >= 50) {
       const r = regression(candles.map((c) => c.close), 50);
@@ -355,7 +396,12 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
           <button onClick={() => setDrawings((d) => d.slice(0, -1))} disabled={!drawings.length} aria-label="Deshacer último dibujo" title="Deshacer (Ctrl+Z)" className="btn grid size-8 place-items-center text-muted hover:text-text disabled:opacity-30"><Undo2 size={15} /></button>
           <button onClick={() => { setDrawings([]); setMeasure(null); }} disabled={!drawings.length && !measure} aria-label="Borrar todos los dibujos" title="Borrar todo" className="btn grid size-8 place-items-center text-muted hover:text-down disabled:opacity-30"><Eraser size={15} /></button>
         </div>
-        <div className="relative ml-auto">
+        {ind.includes("fondeo") && (
+          <button onClick={() => setFsetOpen((o) => !o)} aria-expanded={fsetOpen} className="btn ml-auto flex h-8 items-center gap-1.5 border border-line-strong px-2.5 font-cond text-[12px] uppercase tracking-wider text-text hover:border-amber">
+            <Settings2 size={13} aria-hidden="true" /> Ajustes Fondeo
+          </button>
+        )}
+        <div className={`relative ${ind.includes("fondeo") ? "" : "ml-auto"}`}>
           <button onClick={() => setMenu((m) => !m)} aria-expanded={menu} className="btn h-8 border border-line-strong px-2.5 font-cond text-[12px] uppercase tracking-wider text-text hover:border-amber">
             Indicadores · {ind.length}
           </button>
@@ -388,12 +434,104 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
             <span className={chg >= 0 ? "up" : "down"}>{chg >= 0 ? "+" : ""}{fmt((chg / bar.open) * 100, 2)}%</span>
           </div>
         )}
+        {fondeo && <FondeoPanel p={fondeo.panel} symbol={symbol} />}
+        {fondeo && fsetOpen && <FondeoSettingsForm value={fset} symbol={symbol} onChange={setFset} onClose={() => setFsetOpen(false)} />}
         {tool !== "cursor" && (
           <div className="pointer-events-none absolute bottom-8 left-2 z-10 border border-amber-dim bg-bg/90 px-2 py-1 text-[11px] text-amber">
             {activeTool.label}: {pending ? "clic en el segundo punto · Esc cancela" : activeTool.hint}
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ---------------- Fondeo Agent v5: control table and settings ----------------
+
+function FondeoPanel({ p, symbol }: { p: ReturnType<typeof runFondeo>["panel"]; symbol: string }) {
+  const money = (v: number) => `${v < 0 ? "-" : ""}$${Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  const rows: [string, string, string][] = [
+    [`Cuenta ${p.cuenta}`, `Límite: ${money(p.limite)}`, "text-amber"],
+    ["Margen al límite", money(p.margen), p.margenOk ? "up" : "down"],
+    ["Operaciones hoy", `${p.tradesHoy} / ${p.maxTrades}`, p.tradesHoy >= p.maxTrades ? "down" : "up"],
+    ["Tamaño", p.tamanoOk ? `${p.contratos} ${p.unidad} · riesgo ${money(p.riesgo)}` : "Stop muy amplio", p.tamanoOk ? "text-amber" : "down"],
+    ["P&L simulado hoy", `${p.pnlHoy >= 0 ? "+" : ""}${money(p.pnlHoy)}`, p.limiteDiario ? "down" : p.pnlHoy >= 0 ? "up" : "text-amber"],
+    ["Horario de entradas", p.enEntradas ? "ABIERTO" : "CERRADO", p.enEntradas ? "up" : "text-muted"],
+    ["Noticias", p.enNoticia ? "BLOQUEO" : "OK", p.enNoticia ? "text-amber" : "up"],
+    ["Puede operar", p.puedeOperar ? "SÍ" : "NO", p.puedeOperar ? "up" : "down"],
+    ["Operación", p.operacion, p.operacion === "LARGO" ? "up" : p.operacion === "CORTO" ? "down" : "text-muted"],
+    ["Stop actual", p.stop != null ? `${fmtPrice(symbol, p.stop)}${p.breakeven ? " (BE)" : ""}` : "—", "text-text"],
+  ];
+  return (
+    <div className="absolute right-16 top-8 z-10 w-60 border border-line-strong bg-bg/90 text-[11px] shadow-[0_8px_24px_rgba(0,0,0,0.5)]" aria-label="Panel Fondeo Agent">
+      <div className="flex items-center justify-between border-b border-line px-2 py-1">
+        <span className="ph">Fondeo Agent v5</span>
+        <span className="text-[10px] text-muted">1 pto = ${p.puntoValor}</span>
+      </div>
+      {!p.intradia ? (
+        <p className="p-2 text-muted">Usa una temporalidad intradía (1m a 15m) para ver señales.</p>
+      ) : (
+        <dl>
+          {rows.map(([k, v, c]) => (
+            <div key={k} className="flex justify-between gap-2 border-b border-line/50 px-2 py-0.5 last:border-0">
+              <dt className="text-muted">{k}</dt>
+              <dd className={c}>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <p className="border-t border-line px-2 py-1 text-[10px] text-muted">Señales simuladas, solo visuales. No es recomendación.</p>
+    </div>
+  );
+}
+
+function FondeoSettingsForm({ value, symbol, onChange, onClose }: { value: FondeoSettings; symbol: string; onChange: (v: FondeoSettings) => void; onClose: () => void }) {
+  const num = (k: keyof FondeoSettings, label: string, stepv = 1) => (
+    <label className="flex flex-col gap-0.5">
+      <span className="text-[10px] uppercase tracking-wider text-muted">{label}</span>
+      <input type="number" step={stepv} value={value[k] as number} onChange={(e) => onChange({ ...value, [k]: Number(e.target.value) })} className={`${inputCls} h-8`} />
+    </label>
+  );
+  return (
+    <div role="dialog" aria-label="Ajustes Fondeo Agent" className="absolute right-2 top-2 z-30 max-h-[calc(100%-1rem)] w-[340px] overflow-auto border border-amber-dim bg-panel p-3 shadow-[0_12px_32px_rgba(0,0,0,0.6)] view-in">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="ph">Ajustes Fondeo Agent</span>
+        <button onClick={onClose} className="btn px-2 text-muted hover:text-text" aria-label="Cerrar ajustes">✕</button>
+      </div>
+      <p className="mb-2 text-[11px] text-muted">Mismas reglas que tu indicador de TradingView. Se guardan en este navegador.</p>
+      <div className="grid grid-cols-2 gap-2 text-[12px]">
+        <label className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-wider text-muted">Tamaño de cuenta</span>
+          <select value={value.cuenta} onChange={(e) => onChange({ ...value, cuenta: e.target.value as "25K" | "50K" })} className={`${inputCls} h-8`}>
+            <option value="25K">25K</option><option value="50K">50K</option>
+          </select>
+        </label>
+        {num("ddManual", "Trailing DD ($) · 0 = típico", 50)}
+        {num("saldoActual", "Saldo actual ($)", 50)}
+        {num("saldoMaximo", "Saldo máximo ($)", 50)}
+        {num("colchonMin", "Colchón mínimo ($)", 50)}
+        {num("riskDollars", "Riesgo por operación ($)", 10)}
+        {num("maxContratos", "Máx. contratos")}
+        {num("maxTradesDay", "Máx. operaciones/día")}
+        {num("perdidaDiaMax", "Pérdida diaria máx. ($)", 50)}
+        {num("atrLength", "ATR length")}
+        {num("atrMultiplier", "ATR × (stop)", 0.1)}
+        {num("stopMinPts", "Stop mínimo (pts)")}
+        {num("objetivoR", "Objetivo (R)", 0.1)}
+        {num("breakevenR", "Breakeven en (R)", 0.1)}
+        {num("puntoValor", `Valor del punto ($) · 0 = auto (${autoPointValue(symbol)})`, 0.5)}
+        {num("newsMinutes", "Bloqueo noticias (min)", 5)}
+      </div>
+      <label className="mt-2 flex items-center gap-2 text-[12px]">
+        <input type="checkbox" checked={value.newsFilter} onChange={(e) => onChange({ ...value, newsFilter: e.target.checked })} className="accent-[var(--amber)]" />
+        Filtro de noticias (hora de Nueva York)
+      </label>
+      <div className="mt-1 grid gap-1">
+        {value.news.map((n, i) => (
+          <input key={i} type="datetime-local" value={n} aria-label={`Noticia ${i + 1}`} onChange={(e) => onChange({ ...value, news: value.news.map((x, k) => (k === i ? e.target.value : x)) })} className={`${inputCls} h-8`} />
+        ))}
+      </div>
+      <button onClick={() => onChange({ ...FONDEO_DEFAULTS })} className="btn mt-3 text-[11px] text-muted hover:text-amber">Restaurar valores originales</button>
     </div>
   );
 }

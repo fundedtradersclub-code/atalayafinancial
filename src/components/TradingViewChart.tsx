@@ -7,13 +7,14 @@ import { lang } from "./i18n";
 // ATALAYA can't read these numbers; it's a view, not a data source.
 
 const TV: Record<string, string> = {
-  "^GSPC": "SP:SPX", "^NDX": "NASDAQ:NDX", "^DJI": "DJ:DJI", "^RUT": "TVC:RUT", "^VIX": "TVC:VIX",
-  "^STOXX50E": "TVC:SX5E", "^GDAXI": "XETR:DAX", "^FTSE": "TVC:UKX", "^N225": "TVC:NI225", "^HSI": "TVC:HSI",
+  // Free widgets can't show CME/COMEX/NYMEX futures, so futures map to the closest widget-allowed instrument.
+  "^GSPC": "FOREXCOM:SPXUSD", "^NDX": "FOREXCOM:NSXUSD", "^DJI": "FOREXCOM:DJI", "^RUT": "TVC:RUT", "^VIX": "TVC:VIX",
+  "^STOXX50E": "TVC:SX5E", "^GDAXI": "INDEX:DEU40", "^FTSE": "FOREXCOM:UKXGBP", "^N225": "INDEX:NKY", "^HSI": "TVC:HSI",
   "^BVSP": "BMFBOVESPA:IBOV", "^MXX": "BMV:ME",
-  "ES=F": "CME_MINI:ES1!", "NQ=F": "CME_MINI:NQ1!", "MNQ=F": "CME_MINI:MNQ1!", "MES=F": "CME_MINI:MES1!",
-  "YM=F": "CBOT_MINI:YM1!", "RTY=F": "CME_MINI:RTY1!", "ZN=F": "CBOT:ZN1!", "6E=F": "CME:6E1!",
-  "GC=F": "COMEX:GC1!", "SI=F": "COMEX:SI1!", "HG=F": "COMEX:HG1!", "CL=F": "NYMEX:CL1!", "BZ=F": "NYMEX:BB1!",
-  "NG=F": "NYMEX:NG1!", "KC=F": "ICEUS:KC1!", "CC=F": "ICEUS:CC1!",
+  "ES=F": "FOREXCOM:SPXUSD", "MES=F": "FOREXCOM:SPXUSD", "NQ=F": "FOREXCOM:NSXUSD", "MNQ=F": "FOREXCOM:NSXUSD",
+  "YM=F": "FOREXCOM:DJI", "RTY=F": "FOREXCOM:US2000", "ZN=F": "TVC:US10Y", "6E=F": "FX:EURUSD",
+  "GC=F": "OANDA:XAUUSD", "SI=F": "OANDA:XAGUSD", "HG=F": "OANDA:XCUUSD", "CL=F": "TVC:USOIL", "BZ=F": "TVC:UKOIL",
+  "NG=F": "OANDA:NATGASUSD", "KC=F": "ICEUS:KC1!", "CC=F": "ICEUS:CC1!",
   "DX-Y.NYB": "TVC:DXY", "^TNX": "TVC:US10Y", "^FVX": "TVC:US05Y", "^TYX": "TVC:US30Y", "^IRX": "TVC:US03MY",
 };
 
@@ -78,7 +79,7 @@ export default function TradingViewChart({ symbol, interval = "1d" }: { symbol: 
       <p className="shrink-0 border-t border-line px-2 py-1 text-[10px] text-muted">
         Gráfico y datos de{" "}
         <a href="https://es.tradingview.com/" target="_blank" rel="noreferrer nofollow" className="text-info hover:underline">TradingView</a>.
-        Algunos futuros pueden pedir suscripción o mostrarse con retraso. ATALAYA no lee estos datos: las herramientas de Tendencia, Riesgo e IA siguen usando tus otras fuentes.
+        Los futuros se muestran con su equivalente de contado o CFD (por ejemplo NQ como Nasdaq 100). ATALAYA no lee estos datos: las herramientas de Tendencia, Riesgo e IA siguen usando tus otras fuentes.
       </p>
     </div>
   );
@@ -116,9 +117,9 @@ export function TvMarketOverview() {
           belowLineFillColorGrowing: "rgba(61,220,132,0.08)", belowLineFillColorFalling: "rgba(255,92,77,0.08)",
           symbolActiveColor: "rgba(255,178,36,0.12)",
           tabs: [
-            { title: "Índices", symbols: [sym("FOREXCOM:SPXUSD", "S&P 500"), sym("FOREXCOM:NSXUSD", "Nasdaq 100"), sym("FOREXCOM:DJI", "Dow Jones"), sym("INDEX:DEU40", "DAX"), sym("INDEX:NKY", "Nikkei 225"), sym("FOREXCOM:UKXGBP", "FTSE 100")] },
-            { title: "Futuros", symbols: [sym("CME_MINI:ES1!", "E-mini S&P"), sym("CME_MINI:NQ1!", "E-mini Nasdaq"), sym("COMEX:GC1!", "Oro"), sym("NYMEX:CL1!", "Petróleo WTI"), sym("COMEX:SI1!", "Plata"), sym("NYMEX:NG1!", "Gas natural")] },
-            { title: "Bonos", symbols: [sym("TVC:US02Y", "EE. UU. 2 años"), sym("TVC:US10Y", "EE. UU. 10 años"), sym("TVC:US30Y", "EE. UU. 30 años"), sym("TVC:DE10Y", "Alemania 10 años"), sym("TVC:JP10Y", "Japón 10 años")] },
+            { title: lang() === "en" ? "Indices" : "Índices", symbols: [sym("FOREXCOM:SPXUSD", "S&P 500"), sym("FOREXCOM:NSXUSD", "Nasdaq 100"), sym("FOREXCOM:DJI", "Dow Jones"), sym("INDEX:DEU40", "DAX"), sym("INDEX:NKY", "Nikkei 225"), sym("FOREXCOM:UKXGBP", "FTSE 100")] },
+            { title: lang() === "en" ? "Commodities" : "Materias primas", symbols: [sym("OANDA:XAUUSD", lang() === "en" ? "Gold" : "Oro"), sym("OANDA:XAGUSD", lang() === "en" ? "Silver" : "Plata"), sym("TVC:USOIL", lang() === "en" ? "WTI crude" : "Petróleo WTI"), sym("TVC:UKOIL", "Brent"), sym("OANDA:NATGASUSD", lang() === "en" ? "Natural gas" : "Gas natural"), sym("OANDA:XCUUSD", lang() === "en" ? "Copper" : "Cobre")] },
+            { title: lang() === "en" ? "Bonds" : "Bonos", symbols: [sym("TVC:US02Y", "EE. UU. 2 años"), sym("TVC:US10Y", "EE. UU. 10 años"), sym("TVC:US30Y", "EE. UU. 30 años"), sym("TVC:DE10Y", "Alemania 10 años"), sym("TVC:JP10Y", "Japón 10 años")] },
           ],
         }}
       />

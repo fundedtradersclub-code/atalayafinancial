@@ -43,7 +43,7 @@ export default function Markets({ groups, mode, onKeys, watch, onPick, onUnwatch
       )}
 
       {mode === "public" && (
-        <Panel title="Índices, futuros y bonos · TradingView" className="h-[460px] md:col-span-2 xl:col-span-1 xl:row-span-2 xl:h-auto xl:min-h-[460px]">
+        <Panel title="Índices, materias primas y bonos · TradingView" className="h-[460px] md:col-span-2 xl:col-span-1 xl:row-span-2 xl:h-auto xl:min-h-[460px]">
           <TvMarketOverview />
         </Panel>
       )}
