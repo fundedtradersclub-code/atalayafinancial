@@ -44,7 +44,7 @@ function saveJSON(k: string, v: unknown) {
   try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore */ }
 }
 
-export default function ProChart({ symbol, candles, intraday, frame, livePrice }: { symbol: string; candles: Candle[]; intraday: boolean; frame: string; livePrice?: number | null }) {
+export default function ProChart({ symbol, candles, intraday, frame, livePrice, liveTime }: { symbol: string; candles: Candle[]; intraday: boolean; frame: string; livePrice?: number | null; liveTime?: number | null }) {
   // Keep the user's zoom/scroll when data refreshes; reset it only when the interval changes.
   const viewRef = useRef<{ frame: string; from: number; to: number; n: number } | null>(null);
   const box = useRef<HTMLDivElement>(null);
@@ -245,16 +245,27 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
     api?.chart.applyOptions({ handleScroll: tool === "cursor", handleScale: tool === "cursor" });
   }, [api, tool]);
 
-  // A live tick (e.g. NinjaTrader) moves the last candle between data reloads.
+  // Every live tick moves the forming candle between data reloads, and opens a new candle
+  // when a new interval starts (intraday only), so the chart never lags the price.
+  const liveBar = useRef<Candle | null>(null);
+  useEffect(() => { liveBar.current = null; }, [candles]);
   useEffect(() => {
     const last = candles.at(-1);
     if (!api || !last || livePrice == null) return;
+    const step = candles.length > 1 ? last.time - candles[candles.length - 2].time : 0;
+    let b = liveBar.current ?? { ...last };
+    // Only a live, timestamped price may open a new candle; a delayed one just updates the last.
+    if (intraday && liveTime != null && step > 0 && step < 86400 && liveTime >= b.time + step) {
+      const now = liveTime;
+      const k = Math.floor((now - b.time) / step);
+      b = { time: b.time + k * step, open: b.close, high: livePrice, low: livePrice, close: livePrice, volume: 0 };
+    } else {
+      b = { ...b, high: Math.max(b.high, livePrice), low: Math.min(b.low, livePrice), close: livePrice };
+    }
+    liveBar.current = b;
     const off = intraday ? -new Date().getTimezoneOffset() * 60 : 0;
-    api.main.update({
-      time: (last.time + off) as UTCTimestamp,
-      open: last.open, high: Math.max(last.high, livePrice), low: Math.min(last.low, livePrice), close: livePrice,
-    });
-  }, [api, livePrice, candles, intraday]);
+    api.main.update({ time: (b.time + off) as UTCTimestamp, open: b.open, high: b.high, low: b.low, close: b.close });
+  }, [api, livePrice, liveTime, candles, intraday]);
 
   // Esc cancels, Ctrl+Z undoes the last drawing.
   useEffect(() => {
@@ -275,7 +286,10 @@ export default function ProChart({ symbol, candles, intraday, frame, livePrice }
   const X = (t: number) => ts?.logicalToCoordinate(toLogical(t) as Logical) ?? null;
   const Y = (p: number) => main?.priceToCoordinate(p) ?? null;
 
-  const bar = hover.idx != null ? candles[hover.idx] : candles.at(-1);
+  // Legend: the hovered candle, or the last one carried forward to the live price.
+  const lastC = candles.at(-1);
+  const bar = hover.idx != null ? candles[hover.idx]
+    : lastC && livePrice != null ? { ...lastC, close: livePrice, high: Math.max(lastC.high, livePrice), low: Math.min(lastC.low, livePrice) } : lastC;
   const chg = bar ? bar.close - bar.open : 0;
 
   const svg: React.ReactNode[] = [];

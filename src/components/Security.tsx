@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { ExternalLink, Star } from "lucide-react";
 import type { ChartData, NewsItem, Quote } from "@/lib/market";
 import type { Fundamentals } from "@/lib/sec";
+import { binancePair } from "@/lib/symbols";
 import { Panel, SourceTag, Tick, Updated, dir, fmt, fmtBig, fmtPrice, inputCls, isClosed, pct, usePoll } from "./ui";
 import type { View } from "./Terminal";
 
@@ -56,7 +57,8 @@ export default function Security({
   const fast = interval === "1m" || interval === "5m" || interval === "15m";
   const { data, error, loading } = usePoll<ChartData>(`/api/chart?s=${encodeURIComponent(symbol)}&i=${interval}`, fast ? 20_000 : 60_000);
   // Header price refreshes on its own fast loop; the chart reloads less often.
-  const live = usePoll<Quote[]>(`/api/quotes?s=${encodeURIComponent(symbol)}`, 5_000);
+  // Crypto is real time from Binance: follow it every 2 s; other quotes every 5 s.
+  const live = usePoll<Quote[]>(`/api/quotes?s=${encodeURIComponent(symbol)}`, binancePair(symbol) ? 2_000 : 5_000);
   const lq = live.data?.[0];
   const lp = live.prev?.[0]?.price;
   const s: Record<string, number | null> | undefined = data?.stats ? { ...data.stats, price: lq?.price ?? data.stats.price } : undefined;
@@ -119,7 +121,7 @@ export default function Security({
         {useTv ? (
           <TradingViewChart symbol={symbol} interval={interval} />
         ) : data && data.candles.length > 0 ? (
-          <ProChart key={symbol} symbol={symbol} candles={data.candles} intraday={!["1d", "1w", "1mo"].includes(interval)} frame={interval} livePrice={lq?.source ? lq.price : null} />
+          <ProChart key={symbol} symbol={symbol} candles={data.candles} intraday={!["1d", "1w", "1mo"].includes(interval)} frame={interval} livePrice={lq?.price ?? null} liveTime={lq?.live ? lq.time : null} />
         ) : (
           <div className="grid h-full min-h-[420px] place-items-center text-muted">{loading ? "Cargando…" : "Sin datos para esta temporalidad"}</div>
         )}

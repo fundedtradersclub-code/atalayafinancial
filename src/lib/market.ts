@@ -112,7 +112,7 @@ export async function getQuotes(symbols: string[], ctx: Ctx = DEFAULT_CTX): Prom
   const viaYahoo = rest.filter((s) => !viaKey.includes(s) && !s.startsWith("MT5:"));
   const [a, b, c] = await Promise.all([
     ctx.mode === "personal" ? cached(`yq:${viaYahoo.join(",")}`, 8_000, () => yahooQuotes(viaYahoo)) : publicQuotes(rest, ctx),
-    cached(`bq:${crypto.map((c) => c.s).join(",")}`, 3_000, () => binanceQuotes(crypto)),
+    cached(`bq:${crypto.map((c) => c.s).join(",")}`, 1_500, () => binanceQuotes(crypto)),
     viaKey.length ? publicQuotes(viaKey, ctx) : Promise.resolve([] as Quote[]),
   ]);
   // A ticker Finnhub couldn't price falls back to Yahoo's delayed row.
