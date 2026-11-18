@@ -88,4 +88,12 @@ Informational tool. Nothing shown is investment advice. Investing is high risk: 
 
 ---
 
+## Licencia · License
+
+El código se publica bajo la [licencia MIT](LICENSE). La licencia cubre solo el código de este repositorio: los datos de mercado, los widgets de TradingView, las marcas y las librerías de terceros conservan sus propios términos (ver [Fuentes de datos](https://atalayafinancial.vercel.app/fuentes)).
+
+The code is released under the [MIT License](LICENSE). It covers only the code in this repository: market data, TradingView widgets, trademarks and third-party libraries keep their own terms.
+
+---
+
 <p align="center">Hecho por <a href="https://www.instagram.com/elmigrante.digital/">@elmigrante.digital</a></p>
