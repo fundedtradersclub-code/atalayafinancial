@@ -190,9 +190,9 @@ function TradeBox({ onTrade }: { onTrade: (side: "BUY" | "SELL", qty: number) =>
 }
 
 function SymbolNews({ symbol }: { symbol: string }) {
-  const { data } = usePoll<NewsItem[]>(`/api/news?s=${encodeURIComponent(symbol)}`, 300_000);
+  const { data, at } = usePoll<NewsItem[]>(`/api/news?s=${encodeURIComponent(symbol)}`, 120_000);
   return (
-    <Panel title="Noticias del símbolo" className="min-h-[200px] flex-1">
+    <Panel title="Noticias del símbolo" className="min-h-[200px] flex-1" right={<span>act. <Updated at={at} /></span>}>
       <ul>
         {(data ?? []).map((n) => (
           <li key={n.link} className="border-b border-line/60">

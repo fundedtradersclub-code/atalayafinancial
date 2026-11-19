@@ -213,6 +213,7 @@ export default function ManualEn() {
           </p>
 
           <H id="noticias">12. News</H>
+          <p>It updates by itself while the page is open: headlines <strong>every minute</strong> and each symbol&apos;s news <strong>every 2 minutes</strong>. Next to the panel title you&apos;ll see the time of the last update (“upd.”). If the tab is in the background, it catches up when you return.</p>
           <p>Headlines from MarketWatch and CNBC, filterable by source and linked to the original article. Each symbol page has news specific to that company.</p>
 
           <H id="apis">13. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>

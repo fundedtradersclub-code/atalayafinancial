@@ -394,10 +394,10 @@ export async function getNews(symbol?: string, ctx: Ctx = DEFAULT_CTX): Promise<
   if (symbol && ctx.mode === "public") {
     const fk = ctx.keys.finnhub;
     if (!fk || !isTicker(symbol)) return [];
-    return cached(`pn:${kh(fk)}:${symbol}`, 600_000, () => finnhubNews(symbol, fk).catch(() => []));
+    return cached(`pn:${kh(fk)}:${symbol}`, 120_000, () => finnhubNews(symbol, fk).catch(() => []));
   }
   if (symbol) {
-    return cached(`n:${symbol}`, 300_000, async () => {
+    return cached(`n:${symbol}`, 120_000, async () => {
       const q = symbol.replace(/=F$|=X$|^\^/g, "");
       const d = await getJson<{ news?: { title: string; link: string; publisher: string; providerPublishTime: number }[] }>(
         `${YH}/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=0&newsCount=12`,
@@ -405,7 +405,7 @@ export async function getNews(symbol?: string, ctx: Ctx = DEFAULT_CTX): Promise<
       return (d.news ?? []).map((n) => ({ title: n.title, link: n.link, source: n.publisher, time: n.providerPublishTime * 1000 }));
     });
   }
-  return cached("n:general", 300_000, async () => {
+  return cached("n:general", 60_000, async () => {
     const feeds = [
       ["MarketWatch", "https://feeds.content.dowjones.io/public/rss/mw_topstories"],
       ["MarketWatch Mercados", "https://feeds.content.dowjones.io/public/rss/mw_marketpulse"],

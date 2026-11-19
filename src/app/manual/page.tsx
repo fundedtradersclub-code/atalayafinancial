@@ -209,6 +209,7 @@ export default function Manual() {
           </p>
 
           <H id="noticias">12. Noticias</H>
+          <p>Se actualizan solas mientras la página está abierta: los titulares <strong>cada minuto</strong> y las noticias de cada símbolo <strong>cada 2 minutos</strong>. Junto al título del panel verás la hora de la última actualización (“act.”). Si la pestaña queda en segundo plano, se ponen al día al volver.</p>
           <p>Titulares de MarketWatch y CNBC (en inglés), filtrables por fuente y enlazados a la nota original. En la ficha de cada símbolo hay noticias específicas de esa empresa.</p>
 
           <H id="apis">13. Conectar APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import type { NewsItem } from "@/lib/market";
-import { Panel, usePoll } from "./ui";
+import { Panel, Updated, usePoll } from "./ui";
 
 export default function News() {
-  const { data, error, loading } = usePoll<NewsItem[]>("/api/news", 300_000);
+  // Headlines refresh every minute while the page is visible.
+  const { data, error, loading, at } = usePoll<NewsItem[]>("/api/news", 60_000);
   const [src, setSrc] = useState<string>("Todas");
   const sources = ["Todas", ...new Set((data ?? []).map((n) => n.source))];
   const list = (data ?? []).filter((n) => src === "Todas" || n.source === src);
@@ -14,10 +15,13 @@ export default function News() {
     <Panel
       title="Noticias de mercado"
       right={
+        <div className="flex items-center gap-2">
+        <span className="hidden sm:inline">act. <Updated at={at} /></span>
         <div role="group" aria-label="Fuente" className="flex">
           {sources.map((s) => (
             <button key={s} onClick={() => setSrc(s)} aria-pressed={src === s} className={`btn h-6 px-2 text-[11px] ${src === s ? "bg-amber text-black" : "text-muted hover:text-text"}`}>{s}</button>
           ))}
+        </div>
         </div>
       }
     >

@@ -270,6 +270,7 @@ const EN: Record<string, string> = {
   "y aparece un panel con oro, índices y petróleo en Mercados.": "and a panel with gold, indices and oil appears in Markets.",
   "Son precios de tu bróker (CFD): siguen al mercado pero no son idénticos a los futuros de CME. Solo para uso personal.": "These are your broker's prices (CFDs): they track the market but are not identical to CME futures. Personal use only.",
   "API key de": "API key for",
+  "act.": "upd.",
   "Manual de uso: cómo usar cada pantalla y conectar APIs, MetaTrader y NinjaTrader": "User manual: how to use every screen and connect APIs, MetaTrader and NinjaTrader",
   ", elige el .zip y acepta. Solo una vez.": ", choose the .zip and accept. Only once.",
   "Cierra y vuelve a abrir NinjaTrader. El complemento arranca solo con MNQ, NQ, MES, ES, oro, petróleo y más: no hace falta ningún gráfico.": "Close and reopen NinjaTrader. The add-on starts by itself with MNQ, NQ, MES, ES, gold, oil and more: no chart needed.",
