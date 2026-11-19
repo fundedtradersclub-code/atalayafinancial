@@ -82,6 +82,7 @@ export default function Manual() {
             <li>Las <strong>pestañas</strong> numeradas son las pantallas. El número es su atajo de teclado (Alt + número).</li>
             <li>A la derecha, los <strong>relojes</strong> de Nueva York, Londres, Tokio y tu hora. El punto verde indica bolsa abierta.</li>
             <li>Abajo, el aviso legal y los enlaces a Términos, Privacidad, Cookies, Fuentes y este manual.</li>
+            <li>El botón <strong>Manual</strong>, arriba junto al selector de idioma, abre esta guía en cualquier momento (también está en el pie y en Ayuda).</li>
           </ol>
           <Note>Tu lista de símbolos, la cartera simulada, tus dibujos y tus API keys se guardan <strong>solo en tu navegador</strong>. Si cambias de navegador o borras los datos del sitio, empiezas de cero.</Note>
 
@@ -266,18 +267,27 @@ export default function Manual() {
           <Note tone="warn">Si usas una cuenta de fondeo (Apex u otra), <strong>confirma primero con su soporte</strong> que puedes usar un indicador personalizado de solo lectura. ATALAYA no envía órdenes, pero las reglas son de cada firma.</Note>
           <ol>
             <li>Descarga <a href="/ninjatrader/AtalayaBridge-NinjaTrader.zip" download className="text-info underline">AtalayaBridge-NinjaTrader.zip</a> (no lo descomprimas).</li>
-            <li>En NinjaTrader: <strong>Herramientas → Importar → Complemento NinjaScript…</strong>, elige el .zip y acepta. Si pregunta por reemplazar, di Sí.</li>
-            <li>Si la importación da error: <strong>Nuevo → Editor NinjaScript</strong> → carpeta Indicators → doble clic en AtalayaBridge → <K>F5</K> para compilar.</li>
-            <li>En un gráfico de cada instrumento: clic derecho → <strong>Indicadores…</strong> → agrega <strong>AtalayaBridge</strong> → Aceptar.</li>
-            <li>Deja NinjaTrader abierto y abre ATALAYA en el mismo computador. Si el navegador pide permiso de <strong>“acceso a la red local”</strong>, acéptalo.</li>
-            <li>En Conexiones, “NinjaTrader · tu PC” dirá “conectado”; en Mercados aparece el panel <strong>NinjaTrader · tu PC</strong> con tus instrumentos, y los futuros muestran <span className="text-up">NINJATRADER</span>.</li>
+            <li>En NinjaTrader: <strong>Herramientas → Importar → Complemento NinjaScript…</strong>, elige el .zip y acepta. Si pregunta por reemplazar, di Sí. Se hace <strong>una sola vez</strong>.</li>
+            <li><strong>Cierra y vuelve a abrir NinjaTrader</strong> y conéctate a tus datos como siempre. El complemento arranca solo: no hay que agregar nada a ningún gráfico.</li>
+            <li>Abre ATALAYA en el mismo computador. Si el navegador pide permiso de <strong>“acceso a la red local”</strong>, acéptalo.</li>
+            <li>En Conexiones, “NinjaTrader · tu PC” dirá “conectado”; en Mercados aparece el panel <strong>NinjaTrader · tu PC</strong> con MNQ, NQ, MES, ES, MYM, YM, M2K, RTY, MGC, GC, MCL y CL (el contrato vigente de cada uno, que cambia solo en cada vencimiento).</li>
           </ol>
+          <p>
+            <strong>Alternativa (solo si quieres otro instrumento):</strong> el indicador clásico, que se agrega a un gráfico.
+            Descarga <a href="/ninjatrader/AtalayaBridge-Indicador.zip" download className="text-info underline">AtalayaBridge-Indicador.zip</a>, impórtalo igual y,
+            en el gráfico del instrumento, clic derecho → <strong>Indicadores…</strong> → <strong>AtalayaBridge</strong>. No uses los dos a la vez: el que arranca
+            primero ocupa la conexión.
+          </p>
+          <p>
+            <strong>Si la importación da error:</strong> <strong>Nuevo → Editor NinjaScript</strong>, abre la carpeta <em>AddOns</em> (o <em>Indicators</em>),
+            doble clic en el archivo AtalayaBridge y pulsa <K>F5</K> para compilar.
+          </p>
           <p>
             Qué verás: el precio en vivo de cada instrumento en Mercados, en tu lista y en la cabecera de su ficha, y la última vela del gráfico moviéndose
             con ese precio. NinjaTrader solo comparte precios, no velas: en la web pública el gráfico de un futuro se muestra con TradingView (como
             Nasdaq 100 de contado), y en la instalación personal con las velas de Yahoo.
           </p>
-          <p>Verificación: en NinjaTrader abre <strong>Nuevo → NinjaScript Output</strong>; debe decir “AtalayaBridge: publicando precios en http://127.0.0.1:8777/quotes”.</p>
+          <p>Verificación: en NinjaTrader abre <strong>Nuevo → NinjaScript Output</strong>; debe decir “AtalayaBridgeAddOn: publicando precios en http://127.0.0.1:8777/quotes”. Si dice que el puerto está ocupado, hay otro puente abierto (por ejemplo el indicador en un gráfico): quítalo y reinicia NinjaTrader.</p>
 
           <H id="privacidad">16. Privacidad y riesgo</H>
           <ul>

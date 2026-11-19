@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ALIASES, groupsFor, tapeFor } from "@/lib/symbols";
 import type { Quote } from "@/lib/market";
 import { Tick, dir, fmtPrice, pct, usePoll, useInterval } from "./ui";
+import { BookOpen } from "lucide-react";
 import Markets from "./Markets";
 import Security from "./Security";
 import Risk from "./Risk";
@@ -257,6 +258,14 @@ function TopBar({ cmdRef, onRun, onPick, mode, onKeys }: { cmdRef: React.RefObje
       <div className="flex items-center gap-2">
         <span className="shrink-0" role="img" aria-label="ATALAYA Financial"><Logo size={28} /></span>
         <LangToggle />
+        <a
+          href={lang() === "en" ? "/manual/en" : "/manual"}
+          target="_blank"
+          title="Manual de uso: cómo usar cada pantalla y conectar APIs, MetaTrader y NinjaTrader"
+          className="btn flex h-6 items-center gap-1 border border-amber-dim px-1.5 font-cond text-[11px] uppercase tracking-wider text-amber hover:bg-amber hover:text-black"
+        >
+          <BookOpen size={12} aria-hidden="true" /> Manual
+        </a>
         {mode && (
           <button onClick={onKeys} title="Fuentes de datos y API keys" className="btn border border-line-strong px-1.5 font-cond text-[10px] uppercase tracking-wider text-muted hover:border-amber hover:text-amber">
             {mode === "personal" ? "personal" : "pública"}

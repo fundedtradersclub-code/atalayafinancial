@@ -136,9 +136,9 @@ function NinjaCard() {
         )}
         <ol className="ml-4 list-decimal space-y-1 text-[11.5px] text-muted">
           <li>Descarga <a href="/ninjatrader/AtalayaBridge-NinjaTrader.zip" download className="text-info hover:underline">AtalayaBridge-NinjaTrader.zip</a> (no lo descomprimas).</li>
-          <li>En NinjaTrader: <span className="text-text">Herramientas → Importar → Complemento NinjaScript…</span>, elige el .zip y acepta. NinjaTrader lo compila solo.</li>
-          <li>En un gráfico de MNQ (y de cada instrumento que quieras): clic derecho → <span className="text-text">Indicadores…</span> → agrega <span className="text-text">AtalayaBridge</span> → Aceptar.</li>
-          <li>Deja NinjaTrader abierto. Esta tarjeta pasa a <span className="text-up">conectado</span> y los futuros dicen <span className="text-up">NINJATRADER</span>.</li>
+          <li>En NinjaTrader: <span className="text-text">Herramientas → Importar → Complemento NinjaScript…</span>, elige el .zip y acepta. Solo una vez.</li>
+          <li>Cierra y vuelve a abrir NinjaTrader. El complemento arranca solo con MNQ, NQ, MES, ES, oro, petróleo y más: no hace falta ningún gráfico.</li>
+          <li>Esta tarjeta pasa a <span className="text-up">conectado</span> y los futuros dicen <span className="text-up">NINJATRADER</span>.</li>
         </ol>
         <p className="text-[11px] text-muted">ATALAYA lee {NINJA_URL} desde tu navegador (Chrome, Edge o Firefox; si pide permiso de “acceso a la red local”, acéptalo). Si cierras NinjaTrader, vuelve sola a los otros datos. Si usas una cuenta de fondeo, confirma antes con tu firma que puedes usar un indicador de solo lectura.</p>
       </div>
