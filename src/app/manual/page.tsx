@@ -99,7 +99,7 @@ export default function Manual() {
           <H id="etiquetas">3. Qué significan las etiquetas</H>
           <ul>
             <li><span className="text-up">● EN VIVO</span>: precio en tiempo real (cripto de Binance, acciones con tu key de Finnhub).</li>
-            <li><span className="text-up">● METATRADER 5</span> / <span className="text-up">● NINJATRADER</span>: precio en vivo desde tu propio programa de trading (solo instalación personal).</li>
+            <li><span className="text-up">● METATRADER 5</span> / <span className="text-up">● NINJATRADER</span>: precio en vivo desde tu propio programa de trading, leído en tu computadora (en la web pública y en la instalación personal).</li>
             <li><span className="text-muted">RETRASO</span>: el dato puede llegar 10-15 minutos tarde, o es un dato diario.</li>
             <li>🌙 luna y fila atenuada: ese mercado está <strong>cerrado</strong> (sin datos nuevos hace más de 30 min). No es que la app esté congelada.</li>
             <li>Destello <span className="text-up">verde</span> o <span className="text-down">rojo</span> en un precio: acaba de subir o bajar.</li>
@@ -161,7 +161,7 @@ export default function Manual() {
           <p><strong>Panel de control</strong> (arriba a la derecha del gráfico): límite de la cuenta, margen hasta el límite, operaciones del día, tamaño y riesgo, resultado simulado del día, horario de entradas, bloqueo por noticias, si puede operar, operación actual y stop actual.</p>
           <p><strong>Ajustes:</strong> tamaño de cuenta (25K o 50K), trailing drawdown, saldo actual y máximo, colchón mínimo, riesgo por operación, máximo de contratos y de operaciones por día, pérdida diaria máxima, ATR, stop mínimo, objetivo, breakeven, valor del punto y fechas de noticias (hora de Nueva York). Se guardan en tu navegador; “Restaurar valores originales” vuelve a los del Pine.</p>
           <p><strong>Tamaño:</strong> en futuros, contratos enteros según el valor del punto (MNQ $2, NQ $20, MES $5, ES $50…). En acciones, ETF y cripto, unidades fraccionarias.</p>
-          <p><strong>Datos:</strong> en la instalación personal funciona con MNQ/NQ (Yahoo con retraso, o en vivo con NinjaTrader conectado). En la versión pública los futuros no tienen datos gratis: úsalo con cripto o con ETF (con tu key de Twelve Data o Polygon).</p>
+          <p><strong>Datos:</strong> con MNQ/NQ necesita velas: en la instalación personal vienen de Yahoo (con retraso) y el precio en vivo de NinjaTrader si lo conectas. En la versión pública los futuros no tienen velas gratis: úsalo con cripto o con ETF (con tu key de Twelve Data o Polygon).</p>
           <Note tone="warn">Simulación educativa: no garantiza resultados ni es una recomendación. No envía órdenes, así que no es trading automatizado; aun así, revisa las reglas de tu firma de fondeo.</Note>
 
           <H id="tendencia">7. Tendencia</H>
@@ -230,17 +230,18 @@ export default function Manual() {
           <H id="mt5">14. Conectar MetaTrader 5</H>
           <p>
             Trae a ATALAYA precios <strong>en vivo</strong> de divisas, oro, plata e índices (US100/USTEC, US500, US30, DE40, JPN225…) desde tu
-            MetaTrader 5. Funciona en la <strong>instalación personal</strong> (ATALAYA corriendo en tu propia PC con Windows). Es <strong>solo
-            lectura</strong>: no envía órdenes, no lee tu saldo ni tus posiciones y no usa Asesores Expertos (EA).
+            MetaTrader 5. Funciona en la <strong>web pública</strong> y en la instalación personal: tu navegador lee tu propio MetaTrader dentro de tu
+            computadora, y los datos <strong>no pasan por el servidor de ATALAYA</strong>. Es <strong>solo lectura</strong>: no envía órdenes, no lee tu
+            saldo ni tus posiciones y no usa Asesores Expertos (EA).
           </p>
-          <p><strong>Lo que necesitas:</strong> Windows, MetaTrader 5 y Python 3 (gratis en python.org; al instalar marca “Add Python to PATH”).</p>
+          <p><strong>Lo que necesitas:</strong> Windows, MetaTrader 5, Python 3 (gratis en python.org; al instalar marca “Add Python to PATH”) y Chrome, Edge o Firefox. Safari no permite esta conexión.</p>
           <ol>
             <li>Descarga MetaTrader 5 desde <a href="https://www.metatrader5.com/es/download" target="_blank" rel="noreferrer" className="text-info underline">metatrader5.com</a> e instálalo.</li>
             <li>Ábrelo y crea una <strong>cuenta demo</strong> (Archivo → Abrir una cuenta → MetaQuotes-Demo, o la demo de tu bróker). Es gratis y sin depósito. También sirve tu cuenta real, porque el puente solo lee precios.</li>
             <li>Deja MetaTrader 5 <strong>abierto y con sesión iniciada</strong>.</li>
-            <li>En la carpeta de ATALAYA haz doble clic en <strong>INICIAR-METATRADER5.bat</strong>. La primera vez instala el paquete oficial de MetaQuotes (tarda un minuto).</li>
+            <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (también desde Conexiones), descomprímelo en cualquier carpeta y haz doble clic en <strong>INICIAR-METATRADER5.bat</strong>. La primera vez instala el paquete oficial de MetaQuotes (tarda un minuto). En la instalación personal, el mismo archivo está en la carpeta de ATALAYA.</li>
             <li>La ventana negra debe decir <em>“MetaTrader 5 conectado (…). Instrumentos: N”</em>. <strong>Déjala abierta</strong> mientras uses ATALAYA (puedes minimizarla).</li>
-            <li>En ATALAYA, la tarjeta <strong>MetaTrader 5 · tu PC</strong> de Conexiones dirá “conectado”. Las divisas pasan a <span className="text-up">METATRADER 5</span> y en Mercados aparece un panel con los instrumentos de tu bróker. Sus gráficos, tendencia y riesgo también usan esos datos.</li>
+            <li>Abre ATALAYA en el mismo computador. Si el navegador pide permiso de <strong>“acceso a la red local”</strong>, acéptalo. La tarjeta <strong>MetaTrader 5 · tu PC</strong> de Conexiones dirá “conectado”, las divisas pasan a <span className="text-up">METATRADER 5</span> y en Mercados aparece un panel con los instrumentos de tu bróker, con precio y gráfico en vivo.</li>
           </ol>
           <p><strong>Si algo falla:</strong></p>
           <ul>
@@ -249,19 +250,31 @@ export default function Manual() {
             <li><strong>Falta un instrumento</strong> (por ejemplo el petróleo): tu bróker no lo ofrece con un nombre conocido. Algunas demos no tienen petróleo como CFD.</li>
             <li><strong>Precios quietos</strong>: fuera de horario (fin de semana, o entre las 16:00 y las 17:00 de Ecuador para varios índices) el bróker no cotiza.</li>
             <li>Si cierras MetaTrader o la ventana negra, ATALAYA vuelve sola a los datos con retraso.</li>
+            <li><strong>Sigue “sin conexión”</strong>: revisa que la ventana negra diga “Publicando en http://127.0.0.1:8778”, que aceptaste el permiso de red local y que no usas Safari. Recarga la página.</li>
+            <li>En la web pública, la <strong>Tendencia</strong> y el <strong>Riesgo</strong> de los instrumentos de MetaTrader no están disponibles (se calculan en el servidor, que no ve tu PC). El precio, el gráfico y el indicador Fondeo Agent sí funcionan.</li>
           </ul>
           <Note tone="warn">Son precios de tu bróker (CFD): siguen al mercado pero no son idénticos a los futuros de CME (por ejemplo, US100 frente a NQ puede diferir algunos puntos). Úsalos como referencia para tu uso personal; no se pueden publicar.</Note>
 
           <H id="ninja">15. Conectar NinjaTrader</H>
-          <p>Trae tus futuros (MNQ, NQ, ES…) en vivo desde NinjaTrader 8. Solo instalación personal y solo lectura.</p>
+          <p>
+            Trae tus futuros (MNQ, NQ, ES…) en vivo desde NinjaTrader 8. Funciona en la <strong>web pública</strong> y en la instalación personal: tu
+            navegador lee tu propio NinjaTrader dentro de tu computadora y los datos no pasan por el servidor de ATALAYA. Es solo lectura. Necesitas
+            Windows, NinjaTrader 8 y Chrome, Edge o Firefox (Safari no permite esta conexión).
+          </p>
           <Note tone="warn">Si usas una cuenta de fondeo (Apex u otra), <strong>confirma primero con su soporte</strong> que puedes usar un indicador personalizado de solo lectura. ATALAYA no envía órdenes, pero las reglas son de cada firma.</Note>
           <ol>
             <li>Descarga <a href="/ninjatrader/AtalayaBridge-NinjaTrader.zip" download className="text-info underline">AtalayaBridge-NinjaTrader.zip</a> (no lo descomprimas).</li>
             <li>En NinjaTrader: <strong>Herramientas → Importar → Complemento NinjaScript…</strong>, elige el .zip y acepta. Si pregunta por reemplazar, di Sí.</li>
             <li>Si la importación da error: <strong>Nuevo → Editor NinjaScript</strong> → carpeta Indicators → doble clic en AtalayaBridge → <K>F5</K> para compilar.</li>
             <li>En un gráfico de cada instrumento: clic derecho → <strong>Indicadores…</strong> → agrega <strong>AtalayaBridge</strong> → Aceptar.</li>
-            <li>Deja NinjaTrader abierto. En Conexiones, “NinjaTrader · tu PC” dirá “conectado” y los futuros mostrarán <span className="text-up">NINJATRADER</span>.</li>
+            <li>Deja NinjaTrader abierto y abre ATALAYA en el mismo computador. Si el navegador pide permiso de <strong>“acceso a la red local”</strong>, acéptalo.</li>
+            <li>En Conexiones, “NinjaTrader · tu PC” dirá “conectado”; en Mercados aparece el panel <strong>NinjaTrader · tu PC</strong> con tus instrumentos, y los futuros muestran <span className="text-up">NINJATRADER</span>.</li>
           </ol>
+          <p>
+            Qué verás: el precio en vivo de cada instrumento en Mercados, en tu lista y en la cabecera de su ficha, y la última vela del gráfico moviéndose
+            con ese precio. NinjaTrader solo comparte precios, no velas: en la web pública el gráfico de un futuro se muestra con TradingView (como
+            Nasdaq 100 de contado), y en la instalación personal con las velas de Yahoo.
+          </p>
           <p>Verificación: en NinjaTrader abre <strong>Nuevo → NinjaScript Output</strong>; debe decir “AtalayaBridge: publicando precios en http://127.0.0.1:8777/quotes”.</p>
 
           <H id="privacidad">16. Privacidad y riesgo</H>

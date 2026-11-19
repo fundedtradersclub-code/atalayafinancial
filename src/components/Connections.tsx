@@ -5,7 +5,7 @@ import { Check, ExternalLink, Eye, EyeOff, X } from "lucide-react";
 import { useEffect } from "react";
 import { PROVIDERS, type ProviderId, apiFetch, getKeys, setKey } from "./keys";
 import { NINJA_URL, ninja } from "./ninja";
-import { usePoll } from "./ui";
+import { useMt5 } from "./mt5client";
 import { lang } from "./i18n";
 import { Panel, inputCls } from "./ui";
 
@@ -16,8 +16,8 @@ export default function Connections({ mode }: { mode: "personal" | "public" }) {
   return (
     <div className="grid gap-1.5 sm:gap-2 lg:grid-cols-[1fr_360px]">
       <div className="grid gap-1.5 sm:gap-2">
-        {mode === "personal" && <NinjaCard />}
-        {mode === "personal" && <Mt5Card />}
+        <Mt5Card />
+        <NinjaCard />
         {PROVIDERS.map((p) => (
           <ProviderCard key={p.id} p={p} value={saved[p.id] ?? ""} onSaved={() => setSaved(getKeys())} />
         ))}
@@ -128,7 +128,7 @@ function NinjaCard() {
       right={snap ? <span className="flex items-center gap-1 text-up"><Check size={12} aria-hidden="true" />conectado · {syms.length} instrumento{syms.length === 1 ? "" : "s"}</span> : <span>sin conexión</span>}
     >
       <div className="grid gap-2 p-3 text-[12px]">
-        <p>Precios en vivo de tus futuros (MNQ, NQ, ES…) tomados de tu NinjaTrader. Solo lectura, solo en esta computadora: no envía órdenes ni toca tu cuenta.</p>
+        <p>Precios en vivo de tus futuros (MNQ, NQ, ES…) tomados de tu NinjaTrader 8. Solo lectura: no envía órdenes ni toca tu cuenta. Los datos van de tu PC a tu navegador; no pasan por el servidor de ATALAYA.</p>
         {syms.length > 0 && (
           <ul className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
             {syms.map(([k, q]) => <li key={k}><span className="text-amber">{q.name || k}</span> {q.last}</li>)}
@@ -140,32 +140,34 @@ function NinjaCard() {
           <li>En un gráfico de MNQ (y de cada instrumento que quieras): clic derecho → <span className="text-text">Indicadores…</span> → agrega <span className="text-text">AtalayaBridge</span> → Aceptar.</li>
           <li>Deja NinjaTrader abierto. Esta tarjeta pasa a <span className="text-up">conectado</span> y los futuros dicen <span className="text-up">NINJATRADER</span>.</li>
         </ol>
-        <p className="text-[11px] text-muted">ATALAYA lee {NINJA_URL}. Si cierras NinjaTrader, vuelve sola a los datos con retraso.</p>
+        <p className="text-[11px] text-muted">ATALAYA lee {NINJA_URL} desde tu navegador (Chrome, Edge o Firefox; si pide permiso de “acceso a la red local”, acéptalo). Si cierras NinjaTrader, vuelve sola a los otros datos. Si usas una cuenta de fondeo, confirma antes con tu firma que puedes usar un indicador de solo lectura.</p>
       </div>
     </Panel>
   );
 }
 
 function Mt5Card() {
-  const { data } = usePoll<{ connected: boolean; server: string | null; symbols: { symbol: string; name: string; broker: string }[] }>("/api/mt5", 5_000);
+  const snap = useMt5();
+  const syms = snap ? Object.entries(snap.quotes) : [];
   return (
     <Panel
       title="MetaTrader 5 · tu PC"
-      right={data?.connected ? <span className="flex items-center gap-1 text-up"><Check size={12} aria-hidden="true" />conectado · {data.server}</span> : <span>sin conexión</span>}
+      right={snap ? <span className="flex items-center gap-1 text-up"><Check size={12} aria-hidden="true" />conectado · {snap.server}</span> : <span>sin conexión</span>}
     >
       <div className="grid gap-2 p-3 text-[12px]">
-        <p>Precios en vivo de divisas, oro, plata, petróleo e índices (US100, US500, GER40…) desde tu MetaTrader 5. Solo lectura: no envía órdenes ni lee tu saldo. Usa la librería oficial de MetaQuotes, no un Asesor Experto.</p>
-        {data?.connected && (
+        <p>Precios en vivo de divisas, oro, plata, petróleo e índices (US100, US500, GER40…) desde tu MetaTrader 5. Solo lectura: no envía órdenes ni lee tu saldo. Usa la librería oficial de MetaQuotes, no un Asesor Experto. Los datos van de tu PC a tu navegador; no pasan por el servidor de ATALAYA.</p>
+        {syms.length > 0 && (
           <ul className="flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
-            {data.symbols.map((s) => <li key={s.symbol}><span className="text-amber">{s.name}</span> <span className="text-muted">{s.broker}</span></li>)}
+            {syms.map(([s, q]) => <li key={s}><span className="text-amber">{q.name}</span> <span className="text-muted">{q.broker}</span></li>)}
           </ul>
         )}
         <ol className="ml-4 list-decimal space-y-1 text-[11.5px] text-muted">
-          <li>Instala MetaTrader 5 desde <a href="https://www.metatrader5.com/es/download" target="_blank" rel="noreferrer" className="text-info hover:underline">metatrader5.com</a> y abre una cuenta <span className="text-text">demo</span> (gratis, sin depósito).</li>
-          <li>Con MetaTrader 5 abierto, haz doble clic en <span className="text-text">INICIAR-METATRADER5.bat</span> (carpeta atalaya-terminal). La primera vez instala el paquete oficial.</li>
-          <li>Deja esa ventana abierta. Las divisas pasan a <span className="text-up">METATRADER 5</span> y aparece un panel con oro, índices y petróleo en Mercados.</li>
+          <li>Instala MetaTrader 5 desde <a href="https://www.metatrader5.com/es/download" target="_blank" rel="noreferrer" className="text-info hover:underline">metatrader5.com</a> y abre una cuenta <span className="text-text">demo</span> (gratis, sin depósito), o usa la tuya.</li>
+          <li>Instala <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer" className="text-info hover:underline">Python 3</a> (marca “Add Python to PATH”).</li>
+          <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info hover:underline">AtalayaMT5Bridge.zip</a>, descomprímelo y, con MetaTrader 5 abierto, haz doble clic en <span className="text-text">INICIAR-METATRADER5.bat</span>.</li>
+          <li>Deja esa ventana abierta. Esta tarjeta pasa a <span className="text-up">conectado</span>, las divisas dicen <span className="text-up">METATRADER 5</span> y aparece un panel con tus instrumentos en Mercados.</li>
         </ol>
-        <p className="text-[11px] text-muted">Son precios de tu bróker (CFD): siguen al mercado pero no son idénticos a los futuros de CME. Solo para uso personal.</p>
+        <p className="text-[11px] text-muted">Funciona en Chrome, Edge y Firefox (si el navegador pide permiso de “acceso a la red local”, acéptalo). Son precios de tu bróker (CFD), no idénticos a los futuros de CME, y solo para tu uso personal.</p>
       </div>
     </Panel>
   );

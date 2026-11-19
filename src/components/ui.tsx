@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { decimalsFor } from "@/lib/symbols";
 import { apiFetch } from "./keys";
 import { ninja } from "./ninja";
+import { mt5 } from "./mt5client";
 
 /** Fetch JSON and refresh every `ms` (0 = once). State is keyed by URL, so a new URL never shows stale data. */
 export function usePoll<T>(url: string | null, ms: number) {
@@ -12,25 +13,35 @@ export function usePoll<T>(url: string | null, ms: number) {
     if (!url) return;
     let alive = true;
     const ctrl = new AbortController();
+    let failed = false;
     const load = async () => {
       try {
         const r = await apiFetch(url, { signal: ctrl.signal });
         const j = await r.json();
         if (!alive) return;
         if (!r.ok || (j && typeof j === "object" && !Array.isArray(j) && "error" in j)) {
+          failed = true;
           setState((s) => ({ ...s, url, data: s.url === url ? s.data : null, error: j?.error ?? `Error ${r.status}` }));
-        } else setState((s) => ({ url, data: j as T, prev: s.url === url ? s.data : null, at: Date.now(), error: null }));
+        } else {
+          failed = false;
+          setState((s) => ({ url, data: j as T, prev: s.url === url ? s.data : null, at: Date.now(), error: null }));
+        }
       } catch (e) {
-        if (alive && (e as Error).name !== "AbortError") setState((s) => ({ ...s, url, data: s.url === url ? s.data : null, error: "Sin conexión con la fuente" }));
+        if (alive && (e as Error).name !== "AbortError") {
+          failed = true;
+          setState((s) => ({ ...s, url, data: s.url === url ? s.data : null, error: "Sin conexión con la fuente" }));
+        }
       }
     };
     load();
     window.addEventListener("atalaya-keys", load); // new key typed: refetch right away
-    // With NinjaTrader connected, quote panels follow its 1-second pulse.
-    const onNinja = () => { if (ninja() && url.startsWith("/api/quotes") && !document.hidden) load(); };
+    // With NinjaTrader or MetaTrader connected, quote panels follow their 1-second pulse, and anything
+    // that failed before the bridge answered (e.g. an MT5 chart on first load) is retried right away.
+    const onNinja = () => { if ((ninja() || mt5()) && !document.hidden && (url.startsWith("/api/quotes") || failed)) load(); };
     window.addEventListener("atalaya-ninja", onNinja);
+    window.addEventListener("atalaya-mt5", onNinja);
     const id = ms > 0 ? setInterval(() => { if (!document.hidden) load(); }, ms) : undefined;
-    return () => { alive = false; ctrl.abort(); window.removeEventListener("atalaya-keys", load); window.removeEventListener("atalaya-ninja", onNinja); if (id) clearInterval(id); };
+    return () => { alive = false; ctrl.abort(); window.removeEventListener("atalaya-keys", load); window.removeEventListener("atalaya-ninja", onNinja); window.removeEventListener("atalaya-mt5", onNinja); if (id) clearInterval(id); };
   }, [url, ms]);
   const mine = url != null && state.url === url;
   return { data: mine ? state.data : null, prev: mine ? state.prev : null, at: mine ? state.at : 0, error: mine ? state.error : null, loading: url != null && !mine };

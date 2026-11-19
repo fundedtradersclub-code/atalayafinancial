@@ -103,7 +103,7 @@ export default function ManualEn() {
           <H id="etiquetas">3. What the labels mean</H>
           <ul>
             <li><span className="text-up">● LIVE</span>: real-time price (crypto from Binance, stocks with your Finnhub key).</li>
-            <li><span className="text-up">● METATRADER 5</span> / <span className="text-up">● NINJATRADER</span>: live price from your own trading software (personal installation only).</li>
+            <li><span className="text-up">● METATRADER 5</span> / <span className="text-up">● NINJATRADER</span>: live price from your own trading software, read on your computer (in the public site and in the personal installation).</li>
             <li><span className="text-muted">DELAYED</span>: the data may arrive 10-15 minutes late, or is a daily figure.</li>
             <li>🌙 moon and dimmed row: that market is <strong>closed</strong> (no new data for over 30 minutes). The app is not frozen.</li>
             <li>A <span className="text-up">green</span> or <span className="text-down">red</span> flash on a price: it just ticked up or down.</li>
@@ -165,7 +165,7 @@ export default function ManualEn() {
           <p><strong>Control panel</strong> (top right of the chart): account limit, margin to the limit, trades today, size and risk, simulated P&amp;L for the day, entry window, news block, whether it may trade, current trade and current stop.</p>
           <p><strong>Settings:</strong> account size (25K or 50K), trailing drawdown, current and peak balance, minimum cushion, risk per trade, maximum contracts and trades per day, maximum daily loss, ATR, minimum stop, target, breakeven, point value and news times (New York time). They are saved in your browser; “Restore original values” goes back to the Pine defaults.</p>
           <p><strong>Size:</strong> for futures, whole contracts by point value (MNQ $2, NQ $20, MES $5, ES $50…). For stocks, ETFs and crypto, fractional units.</p>
-          <p><strong>Data:</strong> in the personal installation it works with MNQ/NQ (delayed Yahoo, or live with NinjaTrader connected). In the public version futures have no free data: use it with crypto or ETFs (with your Twelve Data or Polygon key).</p>
+          <p><strong>Data:</strong> with MNQ/NQ it needs candles: in the personal installation they come from Yahoo (delayed), with the live price from NinjaTrader if connected. In the public version futures have no free candles: use it with crypto or ETFs (with your Twelve Data or Polygon key).</p>
           <Note tone="warn">Educational simulation: it does not guarantee results and is not a recommendation. It sends no orders, so it is not automated trading; still, check your funded-account firm&apos;s rules.</Note>
 
           <H id="tendencia">7. Trend</H>
@@ -234,17 +234,18 @@ export default function ManualEn() {
           <H id="mt5">14. Connect MetaTrader 5</H>
           <p>
             Brings <strong>live</strong> prices for currencies, gold, silver and indices (US100/USTEC, US500, US30, DE40, JPN225…) from your MetaTrader 5 into
-            ATALAYA. It works in the <strong>personal installation</strong> (ATALAYA running on your own Windows PC). It is <strong>read-only</strong>: it sends no
+            ATALAYA. It works in the <strong>public site</strong> and in the personal installation: your browser reads your own MetaTrader inside your
+            computer, and the data <strong>does not go through the ATALAYA server</strong>. It is <strong>read-only</strong>: it sends no
             orders, does not read your balance or positions and does not use Expert Advisors (EAs).
           </p>
-          <p><strong>What you need:</strong> Windows, MetaTrader 5 and Python 3 (free at python.org; when installing, tick “Add Python to PATH”).</p>
+          <p><strong>What you need:</strong> Windows, MetaTrader 5, Python 3 (free at python.org; when installing, tick “Add Python to PATH”) and Chrome, Edge or Firefox. Safari does not allow this connection.</p>
           <ol>
             <li>Download MetaTrader 5 from <a href="https://www.metatrader5.com/en/download" target="_blank" rel="noreferrer" className="text-info underline">metatrader5.com</a> and install it.</li>
             <li>Open it and create a <strong>demo account</strong> (File → Open an account → MetaQuotes-Demo, or your broker&apos;s demo). It is free with no deposit. Your real account also works, since the bridge only reads prices.</li>
             <li>Keep MetaTrader 5 <strong>open and logged in</strong>.</li>
-            <li>In the ATALAYA folder, double-click <strong>INICIAR-METATRADER5.bat</strong>. The first time it installs MetaQuotes&apos; official package (takes a minute).</li>
+            <li>Download <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (also from Connections), unzip it anywhere and double-click <strong>INICIAR-METATRADER5.bat</strong>. The first time it installs MetaQuotes&apos; official package (takes a minute). In the personal installation the same file is in the ATALAYA folder.</li>
             <li>The black window should say <em>“MetaTrader 5 conectado (…). Instrumentos: N”</em>. <strong>Keep it open</strong> while you use ATALAYA (you can minimize it).</li>
-            <li>In ATALAYA, the <strong>MetaTrader 5 · your PC</strong> card in Connections will say “connected”. Currencies switch to <span className="text-up">METATRADER 5</span> and a panel with your broker&apos;s instruments appears in Markets. Their charts, trend and risk also use that data.</li>
+            <li>Open ATALAYA on the same computer. If the browser asks for <strong>“local network access”</strong>, allow it. The <strong>MetaTrader 5 · your PC</strong> card in Connections will say “connected”, currencies switch to <span className="text-up">METATRADER 5</span> and a panel with your broker&apos;s instruments appears in Markets, with live price and chart.</li>
           </ol>
           <p><strong>If something fails:</strong></p>
           <ul>
@@ -253,19 +254,31 @@ export default function ManualEn() {
             <li><strong>An instrument is missing</strong> (for example oil): your broker doesn&apos;t offer it under a known name. Some demos have no oil CFD.</li>
             <li><strong>Prices not moving</strong>: outside trading hours (weekends, or around the daily break for several indices) the broker doesn&apos;t quote.</li>
             <li>If you close MetaTrader or the black window, ATALAYA falls back to delayed data on its own.</li>
+            <li><strong>Still “not connected”</strong>: check that the black window says “Publicando en http://127.0.0.1:8778”, that you allowed local network access and that you are not using Safari. Reload the page.</li>
+            <li>In the public site, <strong>Trend</strong> and <strong>Risk</strong> are not available for MetaTrader instruments (they are computed on the server, which cannot see your PC). Price, chart and the Fondeo Agent indicator do work.</li>
           </ul>
           <Note tone="warn">These are your broker&apos;s prices (CFDs): they track the market but are not identical to CME futures (for example, US100 vs NQ can differ by a few points). Use them as a reference for personal use; they may not be published.</Note>
 
           <H id="ninja">15. Connect NinjaTrader</H>
-          <p>Brings your futures (MNQ, NQ, ES…) live from NinjaTrader 8. Personal installation only, read-only.</p>
+          <p>
+            Brings your futures (MNQ, NQ, ES…) live from NinjaTrader 8. It works in the <strong>public site</strong> and in the personal installation: your
+            browser reads your own NinjaTrader inside your computer and the data does not go through the ATALAYA server. Read-only. You need Windows,
+            NinjaTrader 8 and Chrome, Edge or Firefox (Safari does not allow this connection).
+          </p>
           <Note tone="warn">If you trade a funded account (Apex or another), <strong>check with their support first</strong> that you may use a custom read-only indicator. ATALAYA sends no orders, but the rules belong to each firm.</Note>
           <ol>
             <li>Download <a href="/ninjatrader/AtalayaBridge-NinjaTrader.zip" download className="text-info underline">AtalayaBridge-NinjaTrader.zip</a> (don&apos;t unzip it).</li>
             <li>In NinjaTrader: <strong>Tools → Import → NinjaScript Add-On…</strong>, choose the .zip and accept. If asked to replace a file, say Yes.</li>
             <li>If the import fails: <strong>New → NinjaScript Editor</strong> → Indicators folder → double-click AtalayaBridge → <K>F5</K> to compile.</li>
             <li>On a chart of each instrument: right-click → <strong>Indicators…</strong> → add <strong>AtalayaBridge</strong> → OK.</li>
-            <li>Keep NinjaTrader open. In Connections, “NinjaTrader · your PC” will say “connected” and futures will show <span className="text-up">NINJATRADER</span>.</li>
+            <li>Keep NinjaTrader open and open ATALAYA on the same computer. If the browser asks for <strong>“local network access”</strong>, allow it.</li>
+            <li>In Connections, “NinjaTrader · your PC” will say “connected”; in Markets the <strong>NinjaTrader · your PC</strong> panel lists your instruments, and futures show <span className="text-up">NINJATRADER</span>.</li>
           </ol>
+          <p>
+            What you&apos;ll see: each instrument&apos;s live price in Markets, in your list and in its page header, and the chart&apos;s last candle moving with it.
+            NinjaTrader shares prices, not candles: in the public site a future&apos;s chart is shown with TradingView (as the cash Nasdaq 100), and in the
+            personal installation with Yahoo&apos;s candles.
+          </p>
           <p>Check: in NinjaTrader open <strong>New → NinjaScript Output</strong>; it should say “AtalayaBridge: publicando precios en http://127.0.0.1:8777/quotes”.</p>
 
           <H id="privacidad">16. Privacy and risk</H>

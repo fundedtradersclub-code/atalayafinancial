@@ -26,6 +26,10 @@ export default function Page() {
           de ATALAYA, que las usa para pedir los datos al proveedor en tu nombre y no las guarda ni las registra. Puedes borrarlas en Conexiones.
         </li>
         <li>
+          <strong>MetaTrader 5 y NinjaTrader:</strong> si conectas tus programas de trading, tu navegador lee sus precios directamente en tu
+          computadora (127.0.0.1). Esos datos no salen de tu equipo ni pasan por el servidor de ATALAYA.
+        </li>
+        <li>
           <strong>Analista IA:</strong> el texto de tus preguntas y los datos de mercado del símbolo activo se envían a NVIDIA para generar la respuesta.
           No escribas datos personales ni financieros privados en el chat.
         </li>
@@ -49,6 +53,7 @@ export default function Page() {
           <li><strong>In your browser (local storage):</strong> your symbol list, the paper portfolio, the last view, your chart drawings, your API keys, your language and the date you accepted these terms. It does not leave your device and you can delete it by clearing the site data.</li>
           <li><strong>Market queries:</strong> when you request a price or a chart, the ATALAYA server queries the relevant source with the requested symbol. No personal data is sent.</li>
           <li><strong>Your API keys (Finnhub, Twelve Data, Polygon, NVIDIA):</strong> stored only in your browser. They travel with each request to the ATALAYA server, which uses them to request data from the provider on your behalf and neither stores nor logs them. You can delete them in Connections.</li>
+          <li><strong>MetaTrader 5 and NinjaTrader:</strong> if you connect your trading software, your browser reads its prices directly on your computer (127.0.0.1). That data never leaves your device or passes through the ATALAYA server.</li>
           <li><strong>AI Analyst:</strong> the text of your questions and the market data of the active symbol are sent to NVIDIA to generate the answer. Do not write personal or private financial data in the chat.</li>
           <li><strong>Technical logs:</strong> the hosting provider may record basic technical data (such as IP address and access time) for security and operation.</li>
         </ul>

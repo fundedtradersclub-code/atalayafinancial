@@ -9,6 +9,7 @@ Run with INICIAR-METATRADER5.bat (installs the package the first time).
 """
 
 import json
+import threading
 import re
 import sys
 import time
@@ -45,6 +46,9 @@ TF = {
 }
 
 state = {"map": {}, "names": {}, "offset": 0, "account": ""}
+
+# The MetaTrader5 package is not thread-safe: serve one MT5 call at a time.
+MT5_LOCK = threading.Lock()
 
 
 def resolve(candidates, describe=None):
@@ -167,6 +171,10 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        with MT5_LOCK:
+            self._get()
+
+    def _get(self):
         url = urlparse(self.path)
         q = parse_qs(url.query)
         if not mt5.terminal_info() and not connect():

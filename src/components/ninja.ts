@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 // Reads live prices from the AtalayaBridge NinjaScript indicator running on THIS computer.
 // Browser -> 127.0.0.1 only: the data never touches ATALAYA's server (personal use).
 
@@ -51,4 +53,15 @@ export function mergeNinja<T extends Q>(rows: T[]): T[] {
     const change = prev ? x.last - prev : null;
     return { ...q, price: x.last, prevClose: prev, change, changePct: change != null && prev ? (change / prev) * 100 : null, live: true, time: Math.floor((x.time || n.at) / 1000), source: "NinjaTrader" };
   });
+}
+
+/** React view of the visitor's NinjaTrader bridge (re-renders on each poll). */
+export function useNinja() {
+  const [snap, setSnap] = useState(ninja);
+  useEffect(() => {
+    const on = () => setSnap(ninja());
+    window.addEventListener("atalaya-ninja", on);
+    return () => window.removeEventListener("atalaya-ninja", on);
+  }, []);
+  return snap;
 }

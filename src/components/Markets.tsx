@@ -4,6 +4,8 @@ import { Moon, X } from "lucide-react";
 import { type Group, isYield } from "@/lib/symbols";
 import type { Quote } from "@/lib/market";
 import { hasKey } from "./keys";
+import { useMt5 } from "./mt5client";
+import { useNinja } from "./ninja";
 import dynamic from "next/dynamic";
 
 const TvMarketOverview = dynamic(() => import("./TradingViewChart").then((m) => m.TvMarketOverview), { ssr: false });
@@ -14,11 +16,17 @@ import { Panel, SourceTag, Sparkline, Tick, Updated, dir, fmt, fmtPrice, isClose
 export default function Markets({ groups, mode, onKeys, watch, onPick, onUnwatch }: {
   groups: Group[]; mode: "personal" | "public"; onKeys: () => void; watch: string[]; onPick: (s: string) => void; onUnwatch: (s: string) => void;
 }) {
-  const mt5 = usePoll<{ connected: boolean; server: string | null; symbols: { symbol: string; name: string }[] }>(mode === "personal" ? "/api/mt5" : null, 15_000).data;
-  const mt5Group: Group | null = mt5?.connected && mt5.symbols.some((x) => x.symbol.startsWith("MT5:"))
-    ? { id: "mt5", title: `MetaTrader 5 · ${mt5.server ?? ""}`, symbols: mt5.symbols.filter((x) => x.symbol.startsWith("MT5:")).map((x) => ({ s: x.symbol, name: x.name })) }
+  const m5 = useMt5();
+  const m5Syms = m5 ? Object.entries(m5.quotes).filter(([s]) => s.startsWith("MT5:")) : [];
+  const mt5Group: Group | null = m5 && m5Syms.length
+    ? { id: "mt5", title: `MetaTrader 5 · ${m5.server}`, symbols: m5Syms.map(([s, q]) => ({ s, name: q.name })) }
     : null;
-  const shown = mt5Group ? [...groups, mt5Group] : groups;
+  const nt = useNinja();
+  const ntSyms = nt ? Object.entries(nt.quotes) : [];
+  const ntGroup: Group | null = ntSyms.length
+    ? { id: "ninja", title: "NinjaTrader · tu PC", symbols: ntSyms.map(([root, q]) => ({ s: `${root}=F`, name: q.name || root })) }
+    : null;
+  const shown = [...groups, ...(mt5Group ? [mt5Group] : []), ...(ntGroup ? [ntGroup] : [])];
   const ALL = shown.flatMap((g) => g.symbols.map((s) => s.s));
   const needKey = mode === "public" && !hasKey("finnhub");
   const { data, prev, at, error } = usePoll<Quote[]>(`/api/quotes?s=${encodeURIComponent(ALL.join(","))}`, 10_000);
@@ -63,7 +71,7 @@ export default function Markets({ groups, mode, onKeys, watch, onPick, onUnwatch
           <TvQuotes title={g.title} symbols={g.symbols} />
         </Panel>
       ) : (
-        <Panel key={g.id} title={g.title} right={<span className="flex items-center gap-2"><Updated at={at} />{g.id === "mt5" ? <SourceTag live source="MetaTrader 5" /> : g.id === "cry" ? <SourceTag live /> : <SourceTag live={false} />}</span>}>
+        <Panel key={g.id} title={g.title} right={<span className="flex items-center gap-2"><Updated at={at} />{g.id === "mt5" ? <SourceTag live source="MetaTrader 5" /> : g.id === "ninja" ? <SourceTag live source="NinjaTrader" /> : g.id === "cry" ? <SourceTag live /> : <SourceTag live={false} />}</span>}>
           <QuoteTable rows={g.symbols.map((s) => by.get(s.s) ?? { symbol: s.s, name: s.name, price: null, change: null, changePct: null, prevClose: null, spark: [], live: false, time: null })} onPick={onPick} yieldMode={g.id === "bnd"} prevPrice={prevPrice} now={now} />
         </Panel>
       ))}

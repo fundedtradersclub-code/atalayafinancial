@@ -17,6 +17,7 @@ import Gate, { hasAccepted } from "./Gate";
 import { apiFetch } from "./keys";
 import Connections from "./Connections";
 import { startNinja } from "./ninja";
+import { startMt5 } from "./mt5client";
 import Logo from "./Logo";
 import LangToggle from "./LangToggle";
 import { lang } from "./i18n";
@@ -65,7 +66,8 @@ export default function Terminal() {
   const [accepted, setAccepted] = useState(hasAccepted);
   const config = usePoll<{ mode: "personal" | "public"; aiShared: boolean }>("/api/config", 0).data;
   const mode = config?.mode ?? "public";
-  useEffect(() => { if (config?.mode === "personal") startNinja(); }, [config?.mode]);
+  // Each visitor's own NinjaTrader / MetaTrader 5 bridges, read from this browser (public site too).
+  useEffect(() => { startNinja(); startMt5(); }, []);
   // Chat lives here so it survives switching tabs.
   const [chat, setChat] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
 

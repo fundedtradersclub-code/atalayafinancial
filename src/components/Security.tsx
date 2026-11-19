@@ -61,7 +61,10 @@ export default function Security({
   const live = usePoll<Quote[]>(`/api/quotes?s=${encodeURIComponent(symbol)}`, binancePair(symbol) ? 2_000 : 5_000);
   const lq = live.data?.[0];
   const lp = live.prev?.[0]?.price;
-  const s: Record<string, number | null> | undefined = data?.stats ? { ...data.stats, price: lq?.price ?? data.stats.price } : undefined;
+  // Live quote first; if the chart hasn't loaded yet the header still shows the price.
+  const s: Record<string, number | null> | undefined = data?.stats
+    ? { ...data.stats, price: lq?.price ?? data.stats.price }
+    : lq?.price != null ? { price: lq.price, prevClose: lq.prevClose } : undefined;
   const closed = lq ? isClosed(lq, live.at) : false;
   const chg = s?.price != null && s?.prevClose ? s.price - s.prevClose : null;
   const chgPct = chg != null && s?.prevClose ? (chg / s.prevClose) * 100 : null;

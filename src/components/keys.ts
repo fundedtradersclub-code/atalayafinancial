@@ -1,6 +1,7 @@
 "use client";
 
 import { mergeNinja, ninja } from "./ninja";
+import { mergeMt5, mt5, mt5Chart } from "./mt5client";
 
 // Visitor API keys live only in this browser (localStorage). They ride along on each
 // request to ATALAYA's own server, which forwards them to the provider and keeps nothing.
@@ -43,14 +44,26 @@ export function setKey(id: ProviderId, value: string) {
 }
 
 /** fetch() for our own /api routes, carrying the visitor's keys as headers. */
+const json = (body: unknown) => new Response(JSON.stringify(body), { status: 200, headers: { "Content-Type": "application/json" } });
+
 export async function apiFetch(url: string, init: RequestInit = {}) {
+  // The visitor's own MetaTrader 5 (on their PC) answers charts for its instruments directly.
+  if (url.startsWith("/api/chart") && mt5()) {
+    const p = new URL(url, location.origin).searchParams;
+    const s = p.get("s") ?? "";
+    if (mt5()!.quotes[s]) {
+      const data = await mt5Chart(s, p.get("i") ?? p.get("r") ?? "1d").catch(() => null);
+      if (data) return json(data);
+    }
+  }
   const headers = new Headers(init.headers);
   for (const [id, v] of Object.entries(getKeys())) if (v) headers.set(`x-key-${id}`, v);
   const res = await fetch(url, { ...init, headers });
-  // Personal build: NinjaTrader prices (if the bridge is running) replace delayed futures quotes.
-  if (url.startsWith("/api/quotes") && res.ok && ninja()) {
+  // Live prices from the visitor's own NinjaTrader / MetaTrader 5 (read in this browser,
+  // never sent to the server) replace delayed or missing quotes.
+  if (url.startsWith("/api/quotes") && res.ok && (ninja() || mt5())) {
     const rows = await res.json();
-    return new Response(JSON.stringify(Array.isArray(rows) ? mergeNinja(rows) : rows), { status: 200, headers: { "Content-Type": "application/json" } });
+    return json(Array.isArray(rows) ? mergeMt5(mergeNinja(rows)) : rows);
   }
   return res;
 }
