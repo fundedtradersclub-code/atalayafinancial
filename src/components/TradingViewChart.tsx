@@ -148,3 +148,23 @@ export function TvQuotes({ title, symbols }: { title: string; symbols: { s: stri
     </div>
   );
 }
+
+/** Official TradingView economic calendar: releases with time, importance, previous, forecast and actual. */
+export function TvEconomicCalendar({ importance }: { importance: "high" | "medium" | "all" }) {
+  return (
+    <div className="flex h-full flex-col">
+      <TvEmbed
+        widget="events"
+        className="min-h-0 flex-1"
+        config={{
+          colorTheme: "dark", isTransparent: true, width: "100%", height: "100%", locale: lang(),
+          importanceFilter: importance === "high" ? "1" : importance === "medium" ? "0,1" : "-1,0,1",
+          countryFilter: "us,eu,gb,de,jp,cn,ca,au,ch,mx,br,co,cl,ar,pe",
+        }}
+      />
+      <p className="shrink-0 border-t border-line px-2 py-1 text-[10px] text-muted">
+        Calendario de <a href="https://es.tradingview.com/economic-calendar/" target="_blank" rel="noreferrer nofollow" className="text-info hover:underline">TradingView</a>. Horas en tu zona horaria. Útil para llenar las fechas de noticias del indicador Fondeo Agent.
+      </p>
+    </div>
+  );
+}

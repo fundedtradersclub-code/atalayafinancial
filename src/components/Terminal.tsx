@@ -10,7 +10,7 @@ import Security from "./Security";
 import Risk from "./Risk";
 import Calc from "./Calc";
 import Portfolio, { type Paper, emptyPaper, placeOrder } from "./Portfolio";
-import News from "./News";
+import News, { CalendarView } from "./News";
 import Help from "./Help";
 import TrendView from "./Trend";
 import Analyst from "./Analyst";
@@ -23,7 +23,7 @@ import Logo from "./Logo";
 import LangToggle from "./LangToggle";
 import { lang } from "./i18n";
 
-export type View = "MKT" | "DES" | "TREND" | "RISK" | "AI" | "CALC" | "PORT" | "NEWS" | "HELP" | "KEYS";
+export type View = "MKT" | "DES" | "TREND" | "RISK" | "AI" | "CALC" | "PORT" | "NEWS" | "CAL" | "HELP" | "KEYS";
 
 const TABS: { v: View; label: string; key: string }[] = [
   { v: "MKT", label: "Mercados", key: "1" },
@@ -34,6 +34,7 @@ const TABS: { v: View; label: string; key: string }[] = [
   { v: "CALC", label: "Calculadoras", key: "6" },
   { v: "PORT", label: "Cartera", key: "7" },
   { v: "NEWS", label: "Noticias", key: "8" },
+  { v: "CAL", label: "Calendario", key: "C" },
   { v: "HELP", label: "Ayuda", key: "9" },
   { v: "KEYS", label: "Conexiones", key: "0" },
 ];
@@ -44,6 +45,7 @@ const COMMANDS: Record<string, View> = {
   RIESGO: "RISK", RISK: "RISK", CALC: "CALC",
   IA: "AI", AI: "AI", ANALISTA: "AI",
   CARTERA: "PORT", PORT: "PORT", NOT: "NEWS", NEWS: "NEWS", NOTICIAS: "NEWS",
+  CAL: "CAL", CALENDARIO: "CAL", CALENDAR: "CAL",
   AYUDA: "HELP", HELP: "HELP",
   CONEXIONES: "KEYS", API: "KEYS", KEYS: "KEYS",
 };
@@ -140,9 +142,9 @@ export default function Terminal() {
         cmdRef.current?.focus();
         cmdRef.current?.select();
       }
-      if (e.altKey && /^[0-9]$/.test(e.key)) {
+      if (e.altKey && /^[0-9c]$/i.test(e.key)) {
         e.preventDefault();
-        setView(TABS.find((t) => t.key === e.key)!.v);
+        setView(TABS.find((t) => t.key === e.key.toUpperCase())!.v);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -196,6 +198,7 @@ export default function Terminal() {
             <Portfolio paper={paper} onReset={() => setPaper(emptyPaper)} onPick={open} onTrade={trade} />
           )}
           {view === "NEWS" && <News />}
+          {view === "CAL" && <CalendarView />}
           {view === "HELP" && <Help onRun={run} />}
           {view === "KEYS" && <Connections mode={mode} />}
         </div>

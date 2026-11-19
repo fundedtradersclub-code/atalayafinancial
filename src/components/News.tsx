@@ -2,7 +2,30 @@
 
 import { useState } from "react";
 import type { NewsItem } from "@/lib/market";
+import dynamic from "next/dynamic";
 import { Panel, Updated, usePoll } from "./ui";
+
+const TvEconomicCalendar = dynamic(() => import("./TradingViewChart").then((m) => m.TvEconomicCalendar), { ssr: false });
+
+/** Economic calendar view (its own tab). */
+export function CalendarView() {
+  const [imp, setImp] = useState<"high" | "medium" | "all">("medium");
+  return (
+    <Panel
+      title="Calendario económico"
+      className="h-full min-h-[600px]"
+      right={
+        <div role="group" aria-label="Importancia" className="flex">
+          {([["high", "Alta"], ["medium", "Media y alta"], ["all", "Todas"]] as const).map(([k, l]) => (
+            <button key={k} onClick={() => setImp(k)} aria-pressed={imp === k} className={`btn h-6 px-2 text-[11px] ${imp === k ? "bg-amber text-black" : "text-muted hover:text-text"}`}>{l}</button>
+          ))}
+        </div>
+      }
+    >
+      <TvEconomicCalendar importance={imp} />
+    </Panel>
+  );
+}
 
 export default function News() {
   // Headlines refresh every minute while the page is visible.

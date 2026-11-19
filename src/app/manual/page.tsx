@@ -20,7 +20,7 @@ const TOC: [string, string][] = [
   ["ia", "9. Analista IA"],
   ["calc", "10. Calculadoras"],
   ["cartera", "11. Cartera simulada"],
-  ["noticias", "12. Noticias"],
+  ["noticias", "12. Noticias y calendario económico"],
   ["apis", "13. Conectar APIs (Finnhub, Twelve Data, Polygon, NVIDIA)"],
   ["mt5", "14. Conectar MetaTrader 5"],
   ["ninja", "15. Conectar NinjaTrader"],
@@ -91,11 +91,11 @@ export default function Manual() {
             <li><K>AAPL</K> <K>NQ</K> <K>BTC</K> <K>ORO</K> <K>EURUSD</K>: abre la ficha del símbolo.</li>
             <li><K>apple</K>, <K>tesla</K>: busca por nombre; elige con ↑ ↓ y Enter.</li>
             <li><K>NVDA RIESGO</K> o <K>BTC TEND</K>: abre el símbolo directo en esa pantalla.</li>
-            <li><K>MERC</K> <K>TEND</K> <K>RIESGO</K> <K>IA</K> <K>CALC</K> <K>CARTERA</K> <K>NOT</K> <K>AYUDA</K> <K>CONEXIONES</K>: cambia de pantalla.</li>
+            <li><K>MERC</K> <K>TEND</K> <K>RIESGO</K> <K>IA</K> <K>CALC</K> <K>CARTERA</K> <K>NOT</K> <K>CAL</K> <K>AYUDA</K> <K>CONEXIONES</K>: cambia de pantalla.</li>
             <li><K>COMPRAR 10 AAPL</K> · <K>VENDER 5 AAPL</K>: órdenes en la cartera simulada (dinero ficticio).</li>
             <li><K>VIGILAR TSLA</K> · <K>QUITAR TSLA</K>: añade o quita de tu lista.</li>
           </ul>
-          <p>Atajos: <K>/</K> o <K>Ctrl+K</K> va a la línea de comandos · <K>Alt+1</K>…<K>Alt+9</K> y <K>Alt+0</K> cambian de pantalla · <K>Esc</K> limpia.</p>
+          <p>Atajos: <K>/</K> o <K>Ctrl+K</K> va a la línea de comandos · <K>Alt+1</K>…<K>Alt+9</K>, <K>Alt+0</K> y <K>Alt+C</K> (calendario) cambian de pantalla · <K>Esc</K> limpia.</p>
 
           <H id="etiquetas">3. Qué significan las etiquetas</H>
           <ul>
@@ -208,9 +208,15 @@ export default function Manual() {
             $100.000. Solo compras (sin ventas en corto), sin comisiones ni deslizamiento.
           </p>
 
-          <H id="noticias">12. Noticias</H>
+          <H id="noticias">12. Noticias y calendario económico</H>
           <p>Se actualizan solas mientras la página está abierta: los titulares <strong>cada minuto</strong> y las noticias de cada símbolo <strong>cada 2 minutos</strong>. Junto al título del panel verás la hora de la última actualización (“act.”). Si la pestaña queda en segundo plano, se ponen al día al volver.</p>
           <p>Titulares de MarketWatch y CNBC (en inglés), filtrables por fuente y enlazados a la nota original. En la ficha de cada símbolo hay noticias específicas de esa empresa.</p>
+          <p>
+            <strong>Calendario económico</strong> (pestaña <strong>C · Calendario</strong>, o <K>Alt+C</K>, o el comando <K>CAL</K>): los datos y eventos que mueven el mercado (empleo, inflación, decisiones
+            de bancos centrales, PIB…) de EE. UU., Europa, Asia y Latinoamérica, con hora en tu zona horaria, importancia, dato anterior, pronóstico y
+            resultado real. Filtra por importancia con <strong>Alta</strong>, <strong>Media y alta</strong> o <strong>Todas</strong>. Es el calendario oficial
+            de TradingView. Úsalo para llenar las fechas de noticias del indicador Fondeo Agent (sección 6), en hora de Nueva York.
+          </p>
 
           <H id="apis">13. Conectar APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>
           <p>Sin ninguna key ya tienes cripto en vivo, divisas diarias del BCE, estados financieros de la SEC y todas las calculadoras. Con tus keys (todas tienen plan gratis):</p>

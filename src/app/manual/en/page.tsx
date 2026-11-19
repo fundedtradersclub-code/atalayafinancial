@@ -21,7 +21,7 @@ const TOC: [string, string][] = [
   ["ia", "9. AI Analyst"],
   ["calc", "10. Calculators"],
   ["cartera", "11. Paper portfolio"],
-  ["noticias", "12. News"],
+  ["noticias", "12. News and economic calendar"],
   ["apis", "13. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)"],
   ["mt5", "14. Connect MetaTrader 5"],
   ["ninja", "15. Connect NinjaTrader"],
@@ -95,11 +95,11 @@ export default function ManualEn() {
             <li><K>AAPL</K> <K>NQ</K> <K>BTC</K> <K>GOLD</K> <K>EURUSD</K>: opens the symbol page.</li>
             <li><K>apple</K>, <K>tesla</K>: searches by name; pick with ↑ ↓ and Enter.</li>
             <li><K>NVDA RISK</K> or <K>BTC TREND</K>: opens the symbol directly on that screen.</li>
-            <li><K>MKT</K> <K>TREND</K> <K>RISK</K> <K>AI</K> <K>CALC</K> <K>PORT</K> <K>NEWS</K> <K>HELP</K> <K>KEYS</K>: switches screens. The Spanish commands (MERC, TEND, RIESGO, IA, CARTERA, NOT, AYUDA, CONEXIONES) also work.</li>
+            <li><K>MKT</K> <K>TREND</K> <K>RISK</K> <K>AI</K> <K>CALC</K> <K>PORT</K> <K>NEWS</K> <K>CAL</K> <K>HELP</K> <K>KEYS</K>: switches screens. The Spanish commands (MERC, TEND, RIESGO, IA, CARTERA, NOT, AYUDA, CONEXIONES) also work.</li>
             <li><K>BUY 10 AAPL</K> · <K>SELL 5 AAPL</K>: orders in the paper portfolio (fictitious money).</li>
             <li><K>WATCH TSLA</K> · <K>UNWATCH TSLA</K>: adds or removes from your list.</li>
           </ul>
-          <p>Shortcuts: <K>/</K> or <K>Ctrl+K</K> jumps to the command line · <K>Alt+1</K>…<K>Alt+9</K> and <K>Alt+0</K> switch screens · <K>Esc</K> clears.</p>
+          <p>Shortcuts: <K>/</K> or <K>Ctrl+K</K> jumps to the command line · <K>Alt+1</K>…<K>Alt+9</K>, <K>Alt+0</K> and <K>Alt+C</K> (calendar) switch screens · <K>Esc</K> clears.</p>
 
           <H id="etiquetas">3. What the labels mean</H>
           <ul>
@@ -212,9 +212,15 @@ export default function ManualEn() {
             Long only (no short selling), no fees or slippage.
           </p>
 
-          <H id="noticias">12. News</H>
+          <H id="noticias">12. News and economic calendar</H>
           <p>It updates by itself while the page is open: headlines <strong>every minute</strong> and each symbol&apos;s news <strong>every 2 minutes</strong>. Next to the panel title you&apos;ll see the time of the last update (“upd.”). If the tab is in the background, it catches up when you return.</p>
           <p>Headlines from MarketWatch and CNBC, filterable by source and linked to the original article. Each symbol page has news specific to that company.</p>
+          <p>
+            <strong>Economic calendar</strong> (the <strong>C · Calendar</strong> tab, or <K>Alt+C</K>, or the <K>CAL</K> command): the releases and events that move markets (jobs, inflation, central-bank
+            decisions, GDP…) for the US, Europe, Asia and Latin America, with the time in your time zone, importance, previous, forecast and actual.
+            Filter by importance with <strong>High</strong>, <strong>Medium and high</strong> or <strong>All</strong>. It is TradingView&apos;s official calendar.
+            Use it to fill in the news times of the Fondeo Agent indicator (section 6), in New York time.
+          </p>
 
           <H id="apis">13. Connect APIs (Finnhub, Twelve Data, Polygon, NVIDIA)</H>
           <p>Without any key you already get live crypto, daily ECB exchange rates, SEC financial statements and all calculators. With your own keys (all have a free plan):</p>

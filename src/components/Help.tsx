@@ -7,7 +7,7 @@ const CMDS: [string, string][] = [
   ["AAPL · NQ · BTC · ORO · EURUSD", "Abre la ficha del símbolo (gráfico, sesión, noticias, estados financieros)"],
   ["apple · tesla · bitcoin", "Busca por nombre; elige con ↑ ↓ y Enter"],
   ["NVDA RIESGO", "Abre el símbolo directo en la vista de riesgo"],
-  ["MERC · TEND · RIESGO · IA · CALC · CARTERA · NOT", "Cambia de vista"],
+  ["MERC · TEND · RIESGO · IA · CALC · CARTERA · NOT · CAL", "Cambia de vista"],
   ["BTC TEND", "Abre el símbolo directo en Tendencia"],
   ["COMPRAR 10 AAPL", "Orden simulada al último precio (sin el símbolo usa el activo)"],
   ["VENDER 5 AAPL", "Vende de la cartera simulada"],
@@ -16,7 +16,7 @@ const CMDS: [string, string][] = [
 
 const KEYS: [string, string][] = [
   ["/ o Ctrl+K", "Ir a la línea de comandos"],
-  ["Alt+1 … Alt+9, Alt+0", "Cambiar de vista (Alt+0 = Conexiones)"],
+  ["Alt+1 … Alt+9, Alt+0, Alt+C", "Cambiar de vista (Alt+0 = Conexiones, Alt+C = Calendario)"],
   ["Esc", "Limpiar la línea de comandos"],
 ];
 
