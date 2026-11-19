@@ -8,3 +8,5 @@ connectors/
 node_modules
 .next
 build.log
+
+/AtalayaMT5Bridge.exe

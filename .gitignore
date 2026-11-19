@@ -45,3 +45,5 @@ next-env.d.ts
 
 # MetaTrader bridge .exe package (22 MB): served by the website, rebuilt with PyInstaller (see README)
 /public/metatrader/AtalayaMT5Bridge.zip
+
+/AtalayaMT5Bridge.exe
