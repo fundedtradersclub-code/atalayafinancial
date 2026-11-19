@@ -163,11 +163,11 @@ function Mt5Card() {
         )}
         <ol className="ml-4 list-decimal space-y-1 text-[11.5px] text-muted">
           <li>Instala MetaTrader 5 desde <a href="https://www.metatrader5.com/es/download" target="_blank" rel="noreferrer" className="text-info hover:underline">metatrader5.com</a> y abre una cuenta <span className="text-text">demo</span> (gratis, sin depósito), o usa la tuya.</li>
-          <li>Instala <a href="https://www.python.org/downloads/" target="_blank" rel="noreferrer" className="text-info hover:underline">Python 3</a> (marca “Add Python to PATH”).</li>
-          <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info hover:underline">AtalayaMT5Bridge.zip</a>, descomprímelo y, con MetaTrader 5 abierto, haz doble clic en <span className="text-text">INICIAR-METATRADER5.bat</span>.</li>
+          <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info hover:underline">AtalayaMT5Bridge.zip</a> (23 MB, no necesita Python), descomprímelo y, con MetaTrader 5 abierto, haz doble clic en <span className="text-text">AtalayaMT5Bridge.exe</span>.</li>
+          <li>Si Windows dice “Windows protegió su PC” (el programa no tiene firma digital): <span className="text-text">Más información → Ejecutar de todas formas</span>.</li>
           <li>Deja esa ventana abierta. Esta tarjeta pasa a <span className="text-up">conectado</span>, las divisas dicen <span className="text-up">METATRADER 5</span> y aparece un panel con tus instrumentos en Mercados.</li>
         </ol>
-        <p className="text-[11px] text-muted">Funciona en Chrome, Edge y Firefox (si el navegador pide permiso de “acceso a la red local”, acéptalo). Son precios de tu bróker (CFD), no idénticos a los futuros de CME, y solo para tu uso personal.</p>
+        <p className="text-[11px] text-muted">Funciona en Chrome, Edge y Firefox (si el navegador pide permiso de “acceso a la red local”, acéptalo). Son precios de tu bróker (CFD), no idénticos a los futuros de CME, y solo para tu uso personal. ¿Prefieres no usar un .exe? Descarga la <a href="/metatrader/AtalayaMT5Bridge-python.zip" download className="text-info hover:underline">versión con Python</a> (código abierto, requiere Python 3).</p>
       </div>
     </Panel>
   );

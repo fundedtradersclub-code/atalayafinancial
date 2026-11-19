@@ -234,19 +234,21 @@ export default function Manual() {
             computadora, y los datos <strong>no pasan por el servidor de ATALAYA</strong>. Es <strong>solo lectura</strong>: no envía órdenes, no lee tu
             saldo ni tus posiciones y no usa Asesores Expertos (EA).
           </p>
-          <p><strong>Lo que necesitas:</strong> Windows, MetaTrader 5, Python 3 (gratis en python.org; al instalar marca “Add Python to PATH”) y Chrome, Edge o Firefox. Safari no permite esta conexión.</p>
+          <p><strong>Lo que necesitas:</strong> Windows, MetaTrader 5 y Chrome, Edge o Firefox (Safari no permite esta conexión). <strong>No hace falta instalar Python</strong>: el puente viene como un solo programa .exe.</p>
           <ol>
             <li>Descarga MetaTrader 5 desde <a href="https://www.metatrader5.com/es/download" target="_blank" rel="noreferrer" className="text-info underline">metatrader5.com</a> e instálalo.</li>
             <li>Ábrelo y crea una <strong>cuenta demo</strong> (Archivo → Abrir una cuenta → MetaQuotes-Demo, o la demo de tu bróker). Es gratis y sin depósito. También sirve tu cuenta real, porque el puente solo lee precios.</li>
             <li>Deja MetaTrader 5 <strong>abierto y con sesión iniciada</strong>.</li>
-            <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (también desde Conexiones), descomprímelo en cualquier carpeta y haz doble clic en <strong>INICIAR-METATRADER5.bat</strong>. La primera vez instala el paquete oficial de MetaQuotes (tarda un minuto). En la instalación personal, el mismo archivo está en la carpeta de ATALAYA.</li>
+            <li>Descarga <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (23 MB, también desde Conexiones), descomprímelo en cualquier carpeta y haz doble clic en <strong>AtalayaMT5Bridge.exe</strong>.</li>
+            <li>Si Windows muestra <em>“Windows protegió su PC”</em> (pasa porque el programa no tiene firma digital), pulsa <strong>Más información → Ejecutar de todas formas</strong>. Solo la primera vez.</li>
             <li>La ventana negra debe decir <em>“MetaTrader 5 conectado (…). Instrumentos: N”</em>. <strong>Déjala abierta</strong> mientras uses ATALAYA (puedes minimizarla).</li>
             <li>Abre ATALAYA en el mismo computador. Si el navegador pide permiso de <strong>“acceso a la red local”</strong>, acéptalo. La tarjeta <strong>MetaTrader 5 · tu PC</strong> de Conexiones dirá “conectado”, las divisas pasan a <span className="text-up">METATRADER 5</span> y en Mercados aparece un panel con los instrumentos de tu bróker, con precio y gráfico en vivo.</li>
           </ol>
           <p><strong>Si algo falla:</strong></p>
           <ul>
             <li><em>“No pude conectar con MetaTrader 5”</em>: abre MetaTrader 5 e inicia sesión, luego vuelve a abrir el .bat.</li>
-            <li><em>“python no se reconoce”</em>: instala Python desde python.org marcando “Add Python to PATH” y reinicia la PC.</li>
+            <li><strong>El antivirus bloquea el .exe</strong>: es un falso positivo frecuente en programas empaquetados con PyInstaller. El código es público (carpeta <em>connectors</em> del repositorio en GitHub). Si prefieres, usa la <a href="/metatrader/AtalayaMT5Bridge-python.zip" download className="text-info underline">versión con Python</a>: instala Python 3 (marca “Add Python to PATH”) y abre <strong>INICIAR-METATRADER5.bat</strong>.</li>
+            <li><strong>La ventana negra se cierra sola</strong> o dice que el puerto está en uso: ya hay otra copia del puente abierta. Cierra las ventanas negras y abre una sola.</li>
             <li><strong>Falta un instrumento</strong> (por ejemplo el petróleo): tu bróker no lo ofrece con un nombre conocido. Algunas demos no tienen petróleo como CFD.</li>
             <li><strong>Precios quietos</strong>: fuera de horario (fin de semana, o entre las 16:00 y las 17:00 de Ecuador para varios índices) el bróker no cotiza.</li>
             <li>Si cierras MetaTrader o la ventana negra, ATALAYA vuelve sola a los datos con retraso.</li>

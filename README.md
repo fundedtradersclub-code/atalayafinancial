@@ -51,6 +51,13 @@ SEC_USER_AGENT="Nombre correo@ejemplo.com"   # si la SEC pide identificarse
 
 Puentes locales (opcionales, solo lectura): `INICIAR-METATRADER5.bat` (MetaTrader 5, Python) y el indicador `public/ninjatrader/AtalayaBridge.cs` (NinjaTrader 8). Ver el manual.
 
+El puente de MetaTrader se publica también como `.exe` (sin Python) en `public/metatrader/AtalayaMT5Bridge.zip`. No está en el repositorio por su tamaño; para reconstruirlo:
+
+```bash
+pip install pyinstaller MetaTrader5
+pyinstaller --onefile --console --name AtalayaMT5Bridge --hidden-import numpy --collect-all MetaTrader5 --collect-submodules numpy connectors/mt5_bridge.py
+```
+
 ### Aviso
 
 Herramienta informativa. Nada de lo que muestra es recomendación de inversión. Invertir tiene alto riesgo: cada persona asume el riesgo de su dinero.

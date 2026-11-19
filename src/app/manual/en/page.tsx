@@ -238,19 +238,21 @@ export default function ManualEn() {
             computer, and the data <strong>does not go through the ATALAYA server</strong>. It is <strong>read-only</strong>: it sends no
             orders, does not read your balance or positions and does not use Expert Advisors (EAs).
           </p>
-          <p><strong>What you need:</strong> Windows, MetaTrader 5, Python 3 (free at python.org; when installing, tick “Add Python to PATH”) and Chrome, Edge or Firefox. Safari does not allow this connection.</p>
+          <p><strong>What you need:</strong> Windows, MetaTrader 5 and Chrome, Edge or Firefox (Safari does not allow this connection). <strong>No need to install Python</strong>: the bridge comes as a single .exe program.</p>
           <ol>
             <li>Download MetaTrader 5 from <a href="https://www.metatrader5.com/en/download" target="_blank" rel="noreferrer" className="text-info underline">metatrader5.com</a> and install it.</li>
             <li>Open it and create a <strong>demo account</strong> (File → Open an account → MetaQuotes-Demo, or your broker&apos;s demo). It is free with no deposit. Your real account also works, since the bridge only reads prices.</li>
             <li>Keep MetaTrader 5 <strong>open and logged in</strong>.</li>
-            <li>Download <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (also from Connections), unzip it anywhere and double-click <strong>INICIAR-METATRADER5.bat</strong>. The first time it installs MetaQuotes&apos; official package (takes a minute). In the personal installation the same file is in the ATALAYA folder.</li>
+            <li>Download <a href="/metatrader/AtalayaMT5Bridge.zip" download className="text-info underline">AtalayaMT5Bridge.zip</a> (23 MB, also from Connections), unzip it anywhere and double-click <strong>AtalayaMT5Bridge.exe</strong>.</li>
+            <li>If Windows shows <em>“Windows protected your PC”</em> (because the program is not digitally signed), click <strong>More info → Run anyway</strong>. Only the first time.</li>
             <li>The black window should say <em>“MetaTrader 5 conectado (…). Instrumentos: N”</em>. <strong>Keep it open</strong> while you use ATALAYA (you can minimize it).</li>
             <li>Open ATALAYA on the same computer. If the browser asks for <strong>“local network access”</strong>, allow it. The <strong>MetaTrader 5 · your PC</strong> card in Connections will say “connected”, currencies switch to <span className="text-up">METATRADER 5</span> and a panel with your broker&apos;s instruments appears in Markets, with live price and chart.</li>
           </ol>
           <p><strong>If something fails:</strong></p>
           <ul>
             <li><em>“No pude conectar con MetaTrader 5”</em> (could not connect): open MetaTrader 5 and log in, then run the .bat again.</li>
-            <li><em>“python is not recognized”</em>: install Python from python.org ticking “Add Python to PATH” and restart the PC.</li>
+            <li><strong>Your antivirus blocks the .exe</strong>: a common false positive for programs packaged with PyInstaller. The code is public (the <em>connectors</em> folder of the GitHub repository). If you prefer, use the <a href="/metatrader/AtalayaMT5Bridge-python.zip" download className="text-info underline">Python version</a>: install Python 3 (tick “Add Python to PATH”) and open <strong>INICIAR-METATRADER5.bat</strong>.</li>
+            <li><strong>The black window closes on its own</strong> or says the port is in use: another copy of the bridge is already open. Close the black windows and open just one.</li>
             <li><strong>An instrument is missing</strong> (for example oil): your broker doesn&apos;t offer it under a known name. Some demos have no oil CFD.</li>
             <li><strong>Prices not moving</strong>: outside trading hours (weekends, or around the daily break for several indices) the broker doesn&apos;t quote.</li>
             <li>If you close MetaTrader or the black window, ATALAYA falls back to delayed data on its own.</li>
